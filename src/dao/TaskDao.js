@@ -1,3 +1,5 @@
+import DaoHelper from '../helper/DaoHelper.js'
+
 export default class TaskDao {
 
   /*
@@ -6,7 +8,9 @@ export default class TaskDao {
   unionId:添加目标的唯一识别id
   */
   addTask(userId, unionId) {
-
+    const c = DaoHelper.buildConnect()
+    let addSql = 'INSERT INTO user_table(user_id) VALUES'
+    let addSqlParams = []
   }
 
   /*

@@ -1,18 +1,40 @@
+import DaoHelper from '../helper/DaoHelper.js'
+
 export default class TargetDao {
 
   /*
   上传目标数据
   */
-  uploadTargetData() {
-
+  uploadTargetData(name, code, unionId, imgS, imgB, comment, contributor) {
+    const c = DaoHelper.buildConnect()
+    let addSql = 'INSERT INTO target_table(name, code, union_id, img_res_small, img_res_big, comment, contributor)'
+    +` VALUES(?, ?, ?, ?, ?, ?, ?)`
+    let addSqlParams = [name, code, unionId, imgS, imgB, comment, contributor]
+    c.query(addSql, addSqlParams, (err, result) => {
+      if (DaoHelper.handleError(err)) return
+      console.log(`result is ${result}`)
+    })
+    c.end()
   }
 
   /*
   根据unionId删除目标数据
   unionId:目标唯一识别id
   */
-  deleteTargetData(unionId) {
-
+  deleteTargetData(unionIdArray) {
+    const c = DaoHelper.buildConnect()
+    let deleteSql = `DELETE FROM target_table WHERE`
+    let deleteSqlParams = []
+    for (let id of unionIdArray) {
+      deleteSql += ' union_id=? OR'
+      deleteSqlParams.push(id)
+    }
+    deleteSql = deleteSql.substring(0, deleteSql.length - 3)
+    c.query(deleteSql, deleteSqlParams, (err, result) => {
+      if (DaoHelper.handleError(err)) return
+      console.log(`result is ${result}`)
+    })
+    c.end()
   }
 
   /*
@@ -20,25 +42,50 @@ export default class TargetDao {
   unionId:目标唯一识别id
   ...field需更新字段
   */
-  updateTargetData(unionId, ...field) {
-
+  updateTargetData(unionId, fieldArray, newValueArray) {
+    const c = DaoHelper.buildConnect()
+    let updateSql = 'UPDATE target_table SET'
+    let endSql = ` WHERE union_id='${unionId}'`
+    for (let i = 0; i < fieldArray.length; i++) {
+      updateSql += ` ${fieldArray[i]}='${newValueArray[i]}',`
+    }
+    updateSql = updateSql.substring(0, updateSql.length - 1)
+    updateSql += endSql
+    c.query(updateSql, (err, result) => {
+      if (DaoHelper.handleError(err)) return
+      console.log(`result is ${result}`)
+    })
+    c.end()
   }
 
   /*
   根据unionId获取目标数据
   */
   getTargetData(unionId) {
-
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT * FROM target_table WHERE union_id=?`
+    let queryParams = [unionId]
+    c.query(querySql, queryParams, (err, result) => {
+      if (DaoHelper.handleError(err)) return
+      console.log(result[0])
+    })
+    c.end()
   }
 
   /*
   分页请求target列表数据
   pageIndex:分页查询页数索引
   number:每页请求数目
-  userId:用于查询target列表中的数据是否存在与此userId的任务列表中
   */
-  getTargetList(pageIndex, number, userId) {
-
+  getTargetList(pageIndex, number) {
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT * FROM target_table`
+    c.query(querySql, (err, result) => {
+      if (DaoHelper.handleError(err)) return
+      console.log(Object.keys(result))
+      console.log(result[0])
+    })
+    c.end()
   }
 
 }

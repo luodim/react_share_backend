@@ -4,7 +4,7 @@ export default class UserService {
 
   /*
   添加user id
-  admin权限
+  admin权限,可批量化操作
   */
   addUserId(userIdArray) {
     let user = new UserDao()
@@ -13,7 +13,7 @@ export default class UserService {
 
   /*
   根据userId参数删除对应userId
-  admin权限
+  admin权限，可批量化操作
   */
   deleteUserId(userIdArray) {
     let user = new UserDao()
@@ -22,7 +22,7 @@ export default class UserService {
 
   /*
   更新user id数值
-  admin权限
+  admin权限，可批量化操作
   */
   updateUserId(curUserIdArray, newUserIdArray) {
     let user = new UserDao()
