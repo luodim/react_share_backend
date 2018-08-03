@@ -1,5 +1,6 @@
 import UserService from './service/UserService.js'
 import TargetService from './service/TargetService.js'
+import TaskService from './service/TaskService.js'
 
 // testAddUser()
 // testDeleteUser()
@@ -8,8 +9,48 @@ import TargetService from './service/TargetService.js'
 // uploadTarget()
 // deleteTarget()
 // updateTarget()
-// queryTarget()
-getTargetList()
+queryTarget()
+// getTargetList()
+// addTaskTest()
+// delTaskTest()
+// updateTaskTest()
+// getTaskListTest()
+
+// var http = require('http');
+
+// http.createServer(function (request, response) {
+
+//     // 发送 HTTP 头部
+//     // HTTP 状态值: 200 : OK
+//     // 内容类型: text/plain
+//     response.writeHead(200, {'Content-Type': 'text/plain'});
+
+//     // 发送响应数据 "Hello World"
+//     response.end('Hello World\n');
+// }).listen(8888);
+
+// 终端打印如下信息
+// console.log('Server running at http://127.0.0.1:8888/');
+
+function getTaskListTest() {
+  let task = new TaskService()
+  task.getTaskList('u1')
+}
+
+function updateTaskTest() {
+  let task = new TaskService()
+  task.updateTask('u3333xxx3333fff', '0x2168-sdsfjf-dfksdfjkdsjf', 1)
+}
+
+function delTaskTest() {
+  let task = new TaskService()
+  task.deleteTask('u3333xxx3333fffdddd', '0x2168-sdsfjf-dfksdfjkdsjfccccc')
+}
+
+function addTaskTest() {
+  let task = new TaskService()
+  task.addTask('u3333xxx3333fffdddd', '0x2168-sdsfjf-dfksdfjkdsjfccccc')
+}
 
 function getTargetList() {
   let target = new TargetService()
@@ -18,29 +59,28 @@ function getTargetList() {
 
 function queryTarget() {
   let target = new TargetService()
-  target.getTargetData('0f7c44b0-c03d-4415-91fa-1772d9d20512')
+  target.getTargetData('44172ab0-6021-46a8-8686-3460adba9e3c')
 }
 
 function uploadTarget() {
   let target = new TargetService()
-  let name = 'A Mi'
-  let code = '666'
-  let imgS = 'https://www.google.com/small'
-  let imgB = 'https://www.google.com/big'
+  let name = 'A Bee'
+  let code = '777'
+  let imgS = 'https://www.bing.com/small'
+  let imgB = 'https://www.bing.com/big'
   let comment = 'this is girl is quite beautiful and skill is also good'
-  let contributor = 'u43fff'
+  let contributor = 'u43fffxxx'
   target.uploadTargetData(name, code, imgS, imgB, comment, contributor)
 }
 
 function deleteTarget() {
   let target = new TargetService()
-  target.deleteTargetData(['84a4e7b3-5a92-4794-83bd-d535f8a4cd7f', '6cb47f49-25d3-44f3-aafd-2562784e8231', '28b52dbc-cb4f-44c3-9e30-189ee04c7c52', 
-    'd693c8cc-0cea-4e25-8efa-900f080a92f6', 'bc2d7366-d0c8-400a-9193-efcddd8026d7', 'fe40d6f1-69f5-4c3f-8343-1e40d1062437'])
+  target.deleteTargetData(['a7723fd5-8987-44c6-841e-bdd0a905a0cf'])
 }
 
 function updateTarget() {
   let target = new TargetService()
-  target.updateTargetData('0f7c44b0-c03d-4415-91fa-1772d9d20512', ['img_res_small', 'img_res_big', 'comment'], ['a', 'b', 'c'])
+  target.updateTargetData('0f7c44b0-c03d-4415-91fa-1772d9d20512', ['img_res_small', 'img_res_big', 'comment'], ['aaa', 'bbb', 'ccc'])
 }
 
 function testAddUser() {

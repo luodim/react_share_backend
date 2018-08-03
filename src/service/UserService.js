@@ -1,4 +1,5 @@
 import UserDao from '../dao/UserDao.js'
+import DaoHelper from '../helper/DaoHelper.js'
 
 export default class UserService {
 
@@ -8,7 +9,12 @@ export default class UserService {
   */
   addUserId(userIdArray) {
     let user = new UserDao()
-    user.addUserId(userIdArray)
+    let event = DaoHelper.buildEvents()
+    let eventName = 'addUserDaoCB'
+    event.on(eventName, (result) => {
+      console.log(`service result is ${result}`)
+    })
+    user.addUserId(userIdArray, event, eventName)
   }
 
   /*

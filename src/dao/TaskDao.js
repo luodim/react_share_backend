@@ -6,11 +6,17 @@ export default class TaskDao {
   添加任务到任务列表
   userId:用户id
   unionId:添加目标的唯一识别id
+  暂不支持批量更新
   */
-  addTask(userId, unionId) {
+  addTask(userId, unionId, event, eventName) {
     const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO user_table(user_id) VALUES'
-    let addSqlParams = []
+    let addSql = 'INSERT INTO task_table(user_id, is_checked, union_id) VALUES(?, ?, ?)'
+    let addSqlParams = [userId, 0, unionId]
+    c.query(addSql, addSqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
   }
 
   /*
@@ -18,8 +24,15 @@ export default class TaskDao {
   userId:用户id
   unionId:删除目标的唯一识别id
   */
-  deleteTask(userId, union) {
-
+  deleteTask(userId, unionId, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let deleteSql = 'DELETE FROM task_table WHERE union_id=? AND user_id=?'
+    let deleteSqlParams = [unionId, userId]
+    c.query(deleteSql, deleteSqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
   }
 
   /*
@@ -28,23 +41,35 @@ export default class TaskDao {
   unionId:更新目标的唯一识别id
   checkState:更新行为（是否被选中）
   */
-  updateTask(userId, union, checkState) {
-
+  updateTask(userId, unionId, checkState, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let updateSql = 'UPDATE task_table SET is_checked=? WHERE union_id=? AND user_id=?'
+    let updateSqlParams = [checkState, unionId, userId]
+    c.query(updateSql, updateSqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
   }
 
-  /*
-  根据unionId获取目标数据
-  unionId:目标数据的唯一识别id
-  */
-  getTarget(unionId) {
+  // 根据unionId获取目标数据
+  // unionId:目标数据的唯一识别id
+  // getTarget(unionId) {
 
-  }
+  // }
 
   /*
   根据userId获取对应任务列表
   userId:用户id
   */
-  getTaskList(userId) {
-
+  getTaskList(userId, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let querySql = 'SELECT * FROM task_table WHERE user_id=?'
+    let querySqlParams = [userId]
+    c.query(querySql, querySqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
   }
 }

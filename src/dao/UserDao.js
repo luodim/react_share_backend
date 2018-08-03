@@ -7,7 +7,7 @@ export default class UserDao {
   userIdArray:user_id array
   admin权限
   */
-  addUserId(userIdArray) {
+  addUserId(userIdArray, event, eventName) {
     const c = DaoHelper.buildConnect()
     let addSql = 'INSERT INTO user_table(user_id) VALUES'
     let addSqlParams = []
@@ -17,8 +17,8 @@ export default class UserDao {
     }
     addSql = addSql.substring(0, addSql.length - 1)
     c.query(addSql, addSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -28,7 +28,7 @@ export default class UserDao {
   userIdArray:user_id array
   admin权限
   */
-  deleteUserId(userIdArray) {
+  deleteUserId(userIdArray, event, eventName) {
     const c = DaoHelper.buildConnect()
     let deleteSql = `DELETE FROM user_table WHERE`
     let deleteSqlParams = []
@@ -38,8 +38,8 @@ export default class UserDao {
     }
     deleteSql = deleteSql.substring(0, deleteSql.length - 3)
     c.query(deleteSql, deleteSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -50,7 +50,7 @@ export default class UserDao {
   newUserIdArray:需更新数值
   admin权限
   */
-  updateUserId(curUserIdArray, newUserIdArray) {
+  updateUserId(curUserIdArray, newUserIdArray, event, eventName) {
     const c = DaoHelper.buildConnect()
     let updateSql = 'UPDATE user_table SET user_id = CASE user_id '
     let endSql = ''
@@ -63,8 +63,8 @@ export default class UserDao {
     console.log(`update sql is ${updateSql}`)
 
     c.query(updateSql, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -72,14 +72,13 @@ export default class UserDao {
   /*
   验证传入的userId是否有效（是否在user table）
   */
-  verifyUserId(userId) {
+  verifyUserId(userId, event, eventName) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT user_id FROM user_table WHERE user_id='${userId}'`
     console.log(`querySql is ${querySql}`)
     c.query(querySql, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(Object.keys(result))
-      // console.log(result[0]['user_id'])
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }

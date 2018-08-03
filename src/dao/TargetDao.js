@@ -5,14 +5,14 @@ export default class TargetDao {
   /*
   上传目标数据
   */
-  uploadTargetData(name, code, unionId, imgS, imgB, comment, contributor) {
+  uploadTargetData(name, code, unionId, imgS, imgB, comment, contributor, event, eventName) {
     const c = DaoHelper.buildConnect()
     let addSql = 'INSERT INTO target_table(name, code, union_id, img_res_small, img_res_big, comment, contributor)'
     +` VALUES(?, ?, ?, ?, ?, ?, ?)`
     let addSqlParams = [name, code, unionId, imgS, imgB, comment, contributor]
     c.query(addSql, addSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -21,7 +21,7 @@ export default class TargetDao {
   根据unionId删除目标数据
   unionId:目标唯一识别id
   */
-  deleteTargetData(unionIdArray) {
+  deleteTargetData(unionIdArray, event, eventName) {
     const c = DaoHelper.buildConnect()
     let deleteSql = `DELETE FROM target_table WHERE`
     let deleteSqlParams = []
@@ -31,8 +31,8 @@ export default class TargetDao {
     }
     deleteSql = deleteSql.substring(0, deleteSql.length - 3)
     c.query(deleteSql, deleteSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -42,7 +42,7 @@ export default class TargetDao {
   unionId:目标唯一识别id
   ...field需更新字段
   */
-  updateTargetData(unionId, fieldArray, newValueArray) {
+  updateTargetData(unionId, fieldArray, newValueArray, event, eventName) {
     const c = DaoHelper.buildConnect()
     let updateSql = 'UPDATE target_table SET'
     let endSql = ` WHERE union_id='${unionId}'`
@@ -52,8 +52,8 @@ export default class TargetDao {
     updateSql = updateSql.substring(0, updateSql.length - 1)
     updateSql += endSql
     c.query(updateSql, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(`result is ${result}`)
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -61,13 +61,13 @@ export default class TargetDao {
   /*
   根据unionId获取目标数据
   */
-  getTargetData(unionId) {
+  getTargetData(unionId, event, eventName) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT * FROM target_table WHERE union_id=?`
     let queryParams = [unionId]
     c.query(querySql, queryParams, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(result[0])
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -77,13 +77,12 @@ export default class TargetDao {
   pageIndex:分页查询页数索引
   number:每页请求数目
   */
-  getTargetList(pageIndex, number) {
+  getTargetList(pageIndex, number, event, eventName) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT * FROM target_table`
     c.query(querySql, (err, result) => {
-      if (DaoHelper.handleError(err)) return
-      console.log(Object.keys(result))
-      console.log(result[0])
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }

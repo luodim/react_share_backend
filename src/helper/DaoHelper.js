@@ -4,6 +4,11 @@ export default class DaoHelper {
   constructor() {
   }
 
+  static buildEvents() {
+     let events = require('events')
+     return new events.EventEmitter()
+  }
+
   static buildConnect() {
     return mysql.createConnection({
       host:"localhost",
@@ -13,9 +18,10 @@ export default class DaoHelper {
     })
   }
 
-  static handleError(err) {
+  static handleError(err, event, eventName) {
     if (err) {
       console.log(err.message)
+      event.emit(eventName, err)
       return true
     }
     return false
@@ -32,5 +38,24 @@ export default class DaoHelper {
     s[8] = s[13] = s[18] = s[23] = "-";
     var uuid = s.join("");
     return uuid;
+  }
+
+  static buildJson(fieldArray, valueArray) {
+    let json = {}
+    for (let i = 0; i < fieldArray.length; i++) {
+      json[fieldArray[i]] = valueArray[i]
+    }
+    Object.keys(json).map(value => {
+      if (value === 'data') {
+        let obj = json[value]
+        console.log(`equal data, data is ${obj}`)
+        console.log(`obj length is ${obj.length}`)
+        Object.keys(obj).map(v => {
+          console.log(`data ${v}:${obj[v]}`)
+        })
+      }
+      console.log(`json ${value}:${json[value]}`)
+    })
+    return json
   }
 }
