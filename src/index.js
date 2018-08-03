@@ -8,8 +8,8 @@ import TaskService from './service/TaskService.js'
 // queryUser()
 // uploadTarget()
 // deleteTarget()
-// updateTarget()
-queryTarget()
+updateTarget()
+// queryTarget()
 // getTargetList()
 // addTaskTest()
 // delTaskTest()
@@ -64,8 +64,8 @@ function queryTarget() {
 
 function uploadTarget() {
   let target = new TargetService()
-  let name = 'A Bee'
-  let code = '777'
+  let name = 'gggggggggggggggggggg'
+  let code = '777888'
   let imgS = 'https://www.bing.com/small'
   let imgB = 'https://www.bing.com/big'
   let comment = 'this is girl is quite beautiful and skill is also good'
@@ -75,12 +75,12 @@ function uploadTarget() {
 
 function deleteTarget() {
   let target = new TargetService()
-  target.deleteTargetData(['a7723fd5-8987-44c6-841e-bdd0a905a0cf'])
+  target.deleteTargetData(['xccxcxcxcxcxcxcxcx'])
 }
 
 function updateTarget() {
   let target = new TargetService()
-  target.updateTargetData('0f7c44b0-c03d-4415-91fa-1772d9d20512', ['img_res_small', 'img_res_big', 'comment'], ['aaa', 'bbb', 'ccc'])
+  target.updateTargetData('84b44e99-e219-4dea-b338-b7689cad9226', ['img_res_small', 'img_res_big', 'comment'], ['aaa', 'bbb', 'ccc'])
 }
 
 function testAddUser() {

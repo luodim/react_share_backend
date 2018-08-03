@@ -23,7 +23,7 @@ export default class TargetService {
         valueArray.push('fail')
         valueArray.push('400')
       }
-      valueArray.push({})
+      valueArray.push([])
       valueArray.push(new Date().getTime())
       DaoHelper.buildJson(fieldArray, valueArray)
     })
@@ -50,7 +50,7 @@ export default class TargetService {
         valueArray.push('fail')
         valueArray.push('400')
       }
-      valueArray.push({})
+      valueArray.push([])
       valueArray.push(new Date().getTime())
       DaoHelper.buildJson(fieldArray, valueArray)
     })
@@ -77,7 +77,7 @@ export default class TargetService {
         valueArray.push('fail')
         valueArray.push('400')
       }
-      valueArray.push({})
+      valueArray.push([])
       valueArray.push(new Date().getTime())
       DaoHelper.buildJson(fields, valueArray)
     })
@@ -93,22 +93,19 @@ export default class TargetService {
     let eventName = 'getTargetDaoCB'
     let fields
     let valueArray = []
-    let data = {}
+    let dataList = []
     event.on(eventName, (result) => {
       fields = ['message', 'status', 'data', 'timestamp']
-      if (result && result['affectedRows']) {
+      if (result && Object.keys(result).length > 0) {
         valueArray.push('success')
         valueArray.push('200')
+        Object.keys(result).map(v => {dataList.push(result[v])})
       } else {
         valueArray.push('fail')
         valueArray.push('400')
       }
-      valueArray.push(data)
+      valueArray.push(dataList)
       valueArray.push(new Date().getTime())
-      let keyArray = Object.keys(result)
-      if (keyArray.length > 0) {
-        data = result
-      }
       DaoHelper.buildJson(fields, valueArray)
     })
     target.getTargetData(unionId, event, eventName)
@@ -124,8 +121,22 @@ export default class TargetService {
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'getTargetListCB'
+    let fields
+    let valueArray = []
+    let dataList = []
     event.on(eventName, (result) => {
-      console.log(`service result is ${result}`)
+      fields = ['message', 'status', 'data', 'timestamp']
+      if (result && Object.keys(result).length > 0) {
+        valueArray.push('success')
+        valueArray.push('200')
+        Object.keys(result).map(v => {dataList.push(result[v])})
+      } else {
+        valueArray.push('fail')
+        valueArray.push('400')
+      }
+      valueArray.push(dataList)
+      valueArray.push(new Date().getTime())
+      DaoHelper.buildJson(fields, valueArray)
     })
     target.getTargetList(pageIndex, number, event, eventName)
   }
