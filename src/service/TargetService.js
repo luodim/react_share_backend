@@ -1,5 +1,6 @@
 import TargetDao from '../dao/TargetDao.js'
 import DaoHelper from '../helper/DaoHelper.js'
+import TaskService from './TaskService.js'
 
 export default class TargetService {
 
@@ -117,27 +118,53 @@ export default class TargetService {
   number:每页请求数目
   userId:用于查询target列表中的数据是否存在与此userId的任务列表中
   */
-  getTargetList(pageIndex, number, userId) {
+  getTargetList(pageIndex, number, userId, event, eventName) {
     let target = new TargetDao()
-    let event = DaoHelper.buildEvents()
-    let eventName = 'getTargetListCB'
+    let task = new TaskService()
+    let eventTarget = DaoHelper.buildEvents()
+    let eventTask = DaoHelper.buildEvents()
+    let eventTargetName = 'getTargetListDaoCB'
+    let eventTaskName = 'getTaskListDaoCB'
+
+    // todo---对tasklist中的union id与targetlist中的union id比对---------------
+    // 先查询target list的数据，然后根据userId获取userId对应的task list数据，
+    // 再将task list数据与target list数据比对来确定返回数据中的isInTask字段
     let fields
     let valueArray = []
     let dataList = []
-    event.on(eventName, (result) => {
+    eventTarget.on(eventTargetName, (result) => {
       fields = ['message', 'status', 'data', 'timestamp']
       if (result && Object.keys(result).length > 0) {
-        valueArray.push('success')
-        valueArray.push('200')
-        Object.keys(result).map(v => {dataList.push(result[v])})
+        // 查询task list
+        task.getTaskList(userId, eventTask, eventTaskName)
+        let taskUnionIdList = []
+        valueArray = DaoHelper.setStatusMessage(valueArray, true)
+
+        // 任务列表查询数据回调
+        eventTask.on(eventTask, (r) => {
+          // 生成task中union id列表
+          if (r && r.length > 0) {
+            Object.keys(r).map(kv => {if (kv === 'union_id') taskUnionIdList.push(r[kv])})
+          }
+          // 添加target数据到datalist中
+          Object.keys(result).map(v => {
+            if (v === 'union_id') {
+              result['isInTask'] = taskUnionIdList.indexOf(taskresult[v]) === -1 ? false : true
+            }
+            dataList.push(result[v])
+          })
+          this.handleBuild(datalist, fields, valueArray, event, eventName)
+        })
       } else {
-        valueArray.push('fail')
-        valueArray.push('400')
+        valueArray = DaoHelper.statusMessageSet(valueArray, true)
+        this.handleBuild(datalist, fields, valueArray, event, eventName)
       }
-      valueArray.push(dataList)
-      valueArray.push(new Date().getTime())
-      DaoHelper.buildJson(fields, valueArray)
     })
-    target.getTargetList(pageIndex, number, event, eventName)
+    target.getTargetList(pageIndex, number, eventTarget, eventTargetName)
+  }
+
+  handleBuild(datalist, fields, valueArray, event, eventName) {
+    valueArray = DaoHelper.setDataTime(valueArray, datalist)
+    DaoHelper.handleEvent(fields, DaoHelper.setDataTime(valueArray, datalist))
   }
 }

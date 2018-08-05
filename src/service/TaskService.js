@@ -65,8 +65,19 @@ export default class TaskService {
     let task = new TaskDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'getTaskListDaoCB'
+    let valueArray = []
+    let dataList = []
     event.on(eventName, (result) => {
-      console.log(`service result is ${result}`)
+      if (result && Object.keys(result).length > 0) {
+        valueArray = DaoHelper.setStatusMessage(valueArray, true)
+        Object.keys(result).map(v => {
+          dataList.push(result[v])
+        })
+      } else {
+        valueArray = DaoHelper.setStatusMessage(valueArray, false)
+      }
+      valueArray = DaoHelper.setDataTime(valueArray, dataList)
+      DaoHelper.buildJson(fields, valueArray)
     })
     task.getTaskList(userId, event, eventName)
   }

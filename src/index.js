@@ -8,9 +8,9 @@ import TaskService from './service/TaskService.js'
 // queryUser()
 // uploadTarget()
 // deleteTarget()
-updateTarget()
+// updateTarget()
 // queryTarget()
-// getTargetList()
+getTargetList()
 // addTaskTest()
 // delTaskTest()
 // updateTaskTest()
@@ -54,7 +54,7 @@ function addTaskTest() {
 
 function getTargetList() {
   let target = new TargetService()
-  target.getTargetList()
+  target.getTargetList(1, 10, 'u1')
 }
 
 function queryTarget() {

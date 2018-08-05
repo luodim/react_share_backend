@@ -1,14 +1,14 @@
 import mysql from 'mysql'
 
 export default class DaoHelper {
-  constructor() {
-  }
 
+  // 生成event对象
   static buildEvents() {
      let events = require('events')
      return new events.EventEmitter()
   }
 
+  // 生成数据库连接对象
   static buildConnect() {
     return mysql.createConnection({
       host:"localhost",
@@ -18,6 +18,7 @@ export default class DaoHelper {
     })
   }
 
+  // 处理数据库操作error事件
   static handleError(err, event, eventName) {
     if (err) {
       console.log(err.message)
@@ -27,6 +28,7 @@ export default class DaoHelper {
     return false
   }
 
+  // 生成UUID
   static getUUID() {
     var s = [];
     var hexDigits = "0123456789abcdef";
@@ -40,6 +42,7 @@ export default class DaoHelper {
     return uuid;
   }
 
+  // 组装数据
   static buildJson(fieldArray, valueArray) {
     let json = {}
     for (let i = 0; i < fieldArray.length; i++) {
@@ -65,5 +68,27 @@ export default class DaoHelper {
       console.log(`json ${value}:${json[value]}`)
     })
     return json
+  }
+
+  // todo处理组装完成数据后的回调
+  static handleEvent(fields, valueArray, event, eventName) {
+    let json = DaoHelper.buildJson(fields, valueArray)
+    if (event) event.emit(eventName, json)
+  }
+
+  // 设置data及timestamp字段
+  static setDataTime(valueArray, datalist) {
+    valueArray.push(dataList)
+    valueArray.push(new Date().getTime())
+    return valueArray
+  }
+
+  // 设置状态及message字段
+  static setStatusMessage(valueArray, isSuccess) {
+    let message = isSuccess ? 'success' : 'fail'
+    let status = isSuccess ? '200' : '400'
+    valueArray.push(message)
+    valueArray.push(status)
+    return valueArray
   }
 }
