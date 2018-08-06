@@ -71,14 +71,13 @@ export default class DaoHelper {
   }
 
   // todo处理组装完成数据后的回调
-  static handleEvent(fields, valueArray, event, eventName) {
-    let json = DaoHelper.buildJson(fields, valueArray)
-    if (event) event.emit(eventName, json)
+  static handleEvent(result, event, eventName) {
+    if (event) event.emit(eventName, result)
   }
 
   // 设置data及timestamp字段
   static setDataTime(valueArray, datalist) {
-    valueArray.push(dataList)
+    valueArray.push(datalist)
     valueArray.push(new Date().getTime())
     return valueArray
   }

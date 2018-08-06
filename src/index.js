@@ -5,12 +5,12 @@ import TaskService from './service/TaskService.js'
 // testAddUser()
 // testDeleteUser()
 // updateUser()
-// queryUser()
+queryUser()
 // uploadTarget()
 // deleteTarget()
 // updateTarget()
 // queryTarget()
-getTargetList()
+// getTargetList()
 // addTaskTest()
 // delTaskTest()
 // updateTaskTest()
@@ -39,48 +39,48 @@ function getTaskListTest() {
 
 function updateTaskTest() {
   let task = new TaskService()
-  task.updateTask('u3333xxx3333fff', '0x2168-sdsfjf-dfksdfjkdsjf', 1)
+  task.updateTask('zuzuzuzuzuzuzuzuz', 'cccccccffffffffff', 1)
 }
 
 function delTaskTest() {
   let task = new TaskService()
-  task.deleteTask('u3333xxx3333fffdddd', '0x2168-sdsfjf-dfksdfjkdsjfccccc')
+  task.deleteTask('zuzuzuzuzuzuzuzuz', 'cccccccffffffffff')
 }
 
 function addTaskTest() {
   let task = new TaskService()
-  task.addTask('u3333xxx3333fffdddd', '0x2168-sdsfjf-dfksdfjkdsjfccccc')
+  task.addTask('zuzuzuzuzuzuzuzuz', 'cccccccffffffffff')
 }
 
 function getTargetList() {
   let target = new TargetService()
-  target.getTargetList(1, 10, 'u1')
+  target.getTargetList(1, 10, 'u4')
 }
 
 function queryTarget() {
   let target = new TargetService()
-  target.getTargetData('44172ab0-6021-46a8-8686-3460adba9e3c')
+  target.getTargetData('7333d760-420b-4592-81f8-ef07841d7ef9')
 }
 
 function uploadTarget() {
   let target = new TargetService()
-  let name = 'gggggggggggggggggggg'
-  let code = '777888'
-  let imgS = 'https://www.bing.com/small'
-  let imgB = 'https://www.bing.com/big'
-  let comment = 'this is girl is quite beautiful and skill is also good'
-  let contributor = 'u43fffxxx'
+  let name = 'testetstetstetstetstete'
+  let code = '222333444'
+  let imgS = 'https://www.wind.com/small'
+  let imgB = 'https://www.wind.com/big'
+  let comment = 'in the morning we can do something hahahahahaha'
+  let contributor = 'zzzzz123'
   target.uploadTargetData(name, code, imgS, imgB, comment, contributor)
 }
 
 function deleteTarget() {
   let target = new TargetService()
-  target.deleteTargetData(['xccxcxcxcxcxcxcxcx'])
+  target.deleteTargetData(['bc987b6c-92f5-4cd4-a3d9-fc6f8ed6ad96'])
 }
 
 function updateTarget() {
   let target = new TargetService()
-  target.updateTargetData('84b44e99-e219-4dea-b338-b7689cad9226', ['img_res_small', 'img_res_big', 'comment'], ['aaa', 'bbb', 'ccc'])
+  target.updateTargetData('7333d760-420b-4592-81f8-ef07841d7ef9', ['img_res_small', 'img_res_big', 'comment'], ['111', '222', '333'])
 }
 
 function testAddUser() {
@@ -107,10 +107,10 @@ function testAddSecond() {
 
 function updateUser() {
   const user = new UserService()
-  user.updateUserId(['user6'], ['user6ccc'])
+  user.updateUserId(['user8'], ['6xxxxx'])
 }
 
 function queryUser() {
   const user = new UserService()
-  user.verifyUserId('new-u3')
+  user.verifyUserId('ddddddddddd')
 }

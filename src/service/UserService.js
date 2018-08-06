@@ -11,8 +11,18 @@ export default class UserService {
     let user = new UserDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'addUserDaoCB'
+    let fieldArray
+    let valueArray = []
+    let dataList = []
     event.on(eventName, (result) => {
-      console.log(`service result is ${result}`)
+      fieldArray = ['message', 'status', 'data', 'timestamp']
+      if (result && result['affectedRows']) {
+        DaoHelper.setStatusMessage(valueArray, true)
+      } else {
+        DaoHelper.setStatusMessage(valueArray, false)
+      }
+      DaoHelper.setDataTime(valueArray, dataList)
+      DaoHelper.buildJson(fieldArray, valueArray)
     })
     user.addUserId(userIdArray, event, eventName)
   }
@@ -23,7 +33,22 @@ export default class UserService {
   */
   deleteUserId(userIdArray) {
     let user = new UserDao()
-    user.deleteUserId(userIdArray)
+    let event = DaoHelper.buildEvents()
+    let eventName = 'delUserDaoCB'
+    let fieldArray
+    let valueArray = []
+    let dataList = []
+    event.on(eventName, result => {
+      fieldArray = ['message', 'status', 'data', 'timestamp']
+      if (result && result['affectedRows']) {
+        DaoHelper.setStatusMessage(valueArray, true)
+      } else {
+        DaoHelper.setStatusMessage(valueArray, false)
+      }
+      DaoHelper.setDataTime(valueArray, dataList)
+      DaoHelper.buildJson(fieldArray, valueArray)
+    })
+    user.deleteUserId(userIdArray, event, eventName)
   }
 
   /*
@@ -32,7 +57,22 @@ export default class UserService {
   */
   updateUserId(curUserIdArray, newUserIdArray) {
     let user = new UserDao()
-    user.updateUserId(curUserIdArray, newUserIdArray)
+    let event = DaoHelper.buildEvents()
+    let eventName = 'updateUserDaoCB'
+    let fieldArray
+    let valueArray = []
+    let dataList = []
+    event.on(eventName, result => {
+      fieldArray = ['message', 'status', 'data', 'timestamp']
+      if (result && result['affectedRows']) {
+        DaoHelper.setStatusMessage(valueArray, true)
+      } else {
+        DaoHelper.setStatusMessage(valueArray, false)
+      }
+      DaoHelper.setDataTime(valueArray, dataList)
+      DaoHelper.buildJson(fieldArray, valueArray)
+    })
+    user.updateUserId(curUserIdArray, newUserIdArray, event, eventName)
   }
 
   /*
@@ -40,6 +80,23 @@ export default class UserService {
   */
   verifyUserId(userId) {
     let user = new UserDao()
-    user.verifyUserId(userId)
+    let event = DaoHelper.buildEvents()
+    let eventName = 'quertUserDaoCB'
+    let valueArray = []
+    let dataList = []
+    let fields
+    event.on(eventName, (result) => {
+      fields = ['message', 'status', 'isValid', 'timestamp']
+      if (result && Object.keys(result).length > 0) {
+        valueArray = DaoHelper.setStatusMessage(valueArray, true)
+        valueArray.push(true)
+      } else {
+        valueArray = DaoHelper.setStatusMessage(valueArray, false)
+        valueArray.push(false)
+      }
+      DaoHelper.setDataTime(valueArray, dataList)
+      DaoHelper.buildJson(fields, valueArray)
+    })
+    user.verifyUserId(userId, event, eventName)
   }
 }

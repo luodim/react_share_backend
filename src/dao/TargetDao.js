@@ -12,7 +12,7 @@ export default class TargetDao {
     let addSqlParams = [name, code, unionId, imgS, imgB, comment, contributor]
     c.query(addSql, addSqlParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
+      DaoHelper.handleEvent(result, event, eventName)
     })
     c.end()
   }
@@ -32,7 +32,7 @@ export default class TargetDao {
     deleteSql = deleteSql.substring(0, deleteSql.length - 3)
     c.query(deleteSql, deleteSqlParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
+      DaoHelper.handleEvent(result, event, eventName)
     })
     c.end()
   }
@@ -53,7 +53,7 @@ export default class TargetDao {
     updateSql += endSql
     c.query(updateSql, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
+      DaoHelper.handleEvent(result, event, eventName)
     })
     c.end()
   }
@@ -67,7 +67,7 @@ export default class TargetDao {
     let queryParams = [unionId]
     c.query(querySql, queryParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
+      DaoHelper.handleEvent(result, event, eventName)
     })
     c.end()
   }
@@ -82,7 +82,7 @@ export default class TargetDao {
     let querySql = `SELECT * FROM target_table`
     c.query(querySql, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
+      DaoHelper.handleEvent(result, event, eventName)
     })
     c.end()
   }
