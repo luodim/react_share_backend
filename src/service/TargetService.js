@@ -7,7 +7,7 @@ export default class TargetService {
   /*
   上传目标数据
   */
-  uploadTargetData(name, code, imgS, imgB, comment, contributor) {
+  uploadTargetData(name, code, imgS, imgB, comment, contributor, e, en) {
     let uuid = DaoHelper.getUUID()
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
@@ -24,7 +24,7 @@ export default class TargetService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fieldArray, valueArray)
+      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     target.uploadTargetData(name, code, uuid, imgS, imgB, comment, contributor, event, eventName)
   }
@@ -34,7 +34,7 @@ export default class TargetService {
   unionId:目标唯一识别id
   admin权限，支持批量操作
   */
-  deleteTargetData(unionIdArray) {
+  deleteTargetData(unionIdArray, e, en) {
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'deleteTargetDaoCB'
@@ -49,7 +49,7 @@ export default class TargetService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fieldArray, valueArray)
+      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     target.deleteTargetData(unionIdArray, event, eventName)
   }
@@ -59,7 +59,7 @@ export default class TargetService {
   unionId:目标唯一识别id
   admin权限，暂不开放user操作
   */
-  updateTargetData(unionId, fieldArray, newValueArray) {
+  updateTargetData(unionId, fieldArray, newValueArray, e, en) {
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'updateTargetDaoCB'
@@ -74,7 +74,7 @@ export default class TargetService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fields, valueArray)
+      e.emit(en, DaoHelper.buildJson(fields, valueArray))
     })
     target.updateTargetData(unionId, fieldArray, newValueArray, event, eventName)
   }
@@ -82,7 +82,7 @@ export default class TargetService {
   /*
   根据unionId获取目标数据
   */
-  getTargetData(unionId) {
+  getTargetData(unionId, e, en) {
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'getTargetDaoCB'
@@ -98,7 +98,7 @@ export default class TargetService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fields, valueArray)
+      e.emit(em, DaoHelper.buildJson(fields, valueArray))
     })
     target.getTargetData(unionId, event, eventName)
   }
@@ -109,7 +109,7 @@ export default class TargetService {
   number:每页请求数目
   userId:用于查询target列表中的数据是否存在与此userId的任务列表中
   */
-  getTargetList(pageIndex, number, userId) {
+  getTargetList(pageIndex, number, userId, e, en) {
     let target = new TargetDao()
     let task = new TaskDao()
     let eventTarget = DaoHelper.buildEvents()
@@ -143,11 +143,11 @@ export default class TargetService {
             result[v]['is_in_task'] = taskUnionIdList.indexOf(result[v]['union_id']) === -1 ? false : true
             dataList.push(result[v])
           })
-          this.handleBuild(dataList, fields, valueArray)
+          this.handleBuild(dataList, fields, valueArray, e, en)
         })
       } else {
         valueArray = DaoHelper.statusMessageSet(valueArray, true)
-        this.handleBuild(datalist, fields, valueArray)
+        this.handleBuild(datalist, fields, valueArray, e, en)
       }
     })
     target.getTargetList(pageIndex, number, eventTarget, eventTargetName)
@@ -156,6 +156,6 @@ export default class TargetService {
   handleBuild(datalist, fields, valueArray, event, eventName) {
     valueArray = DaoHelper.setDataTime(valueArray, datalist)
     let json = DaoHelper.buildJson(fields, valueArray)
-    // DaoHelper.handleEvent(json, event, eventName)
+    event.emit(eventName, DaoHelper.buildJson(fields, valueArray))
   }
 }

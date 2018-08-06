@@ -8,7 +8,7 @@ export default class TaskService {
   userId:用户id
   unionId:添加目标的唯一识别id
   */
-  addTask(userId, unionId) {
+  addTask(userId, unionId, e, en) {
     let task = new TaskDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'addTaskDaoCB'
@@ -23,7 +23,7 @@ export default class TaskService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fieldArray, valueArray)
+      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     task.addTask(userId, unionId, event, eventName)
   }
@@ -33,7 +33,7 @@ export default class TaskService {
   userId:用户id
   unionId:删除目标的唯一识别id
   */
-  deleteTask(userId, unionId) {
+  deleteTask(userId, unionId, e, en) {
     let task = new TaskDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'deleteTaskDaoCB'
@@ -48,7 +48,7 @@ export default class TaskService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fieldArray, valueArray)
+      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     task.deleteTask(userId, unionId, event, eventName)
   }
@@ -59,7 +59,7 @@ export default class TaskService {
   unionId:更新目标的唯一识别id
   checkState:更新行为（是否被选中）
   */
-  updateTask(userId, unionId, checkState) {
+  updateTask(userId, unionId, checkState, e, en) {
     let task = new TaskDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'updateTaskDaoCB'
@@ -74,7 +74,7 @@ export default class TaskService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fields, valueArray)
+      e.emit(en, DaoHelper.buildJson(fields, valueArray))
     })
     task.updateTask(userId, unionId, checkState, event, eventName)
   }
@@ -83,7 +83,7 @@ export default class TaskService {
   根据userId获取对应任务列表
   userId:用户id
   */
-  getTaskList(userId) {
+  getTaskList(userId, e, en) {
     let task = new TaskDao()
     let event = DaoHelper.buildEvents()
     let eventName = 'getTaskListDaoCB'
@@ -101,7 +101,7 @@ export default class TaskService {
         valueArray = DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
-      DaoHelper.buildJson(fields, valueArray)
+      e.emit(en, DaoHelper.buildJson(fields, valueArray))
     })
     task.getTaskList(userId, event, eventName)
   }
