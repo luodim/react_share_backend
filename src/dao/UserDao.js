@@ -69,6 +69,18 @@ export default class UserDao {
     c.end()
   }
 
+  // 更新邀请码
+  updateInvationCode(invationCode, userId) {
+    const c = DaoHelper.buildConnect()
+    let updateSql = 'UPDATE user_table SET invation_code=? WHERE user_id=?'
+    let updateSqlParams = [invationCode, userId]
+    c.query(querySql, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      console.log('update invation code is success')
+    })
+    c.end()
+  }
+
   /*
   验证传入的userId是否有效（是否在user table）
   */

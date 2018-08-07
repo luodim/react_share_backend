@@ -1,26 +1,35 @@
-var http = require("http");
-var url = require("url");
+import http from "http"
+import url from "url"
+import querystring from 'querystring'
+import Router from './router.js'
 
 export default class Server {
+
   startServer() {
-  	http.createServer((req, res) => {
-  	  if (req) {
-  	    let method = req.method
-  	    let u = req.url
-  	    if (method === 'GET') {
-          let params = url.parse(req.url, true).query
-          let pathname = url.parse(req.url, true).pathname
-          this.handlePathname(pathname)
-  	    } else if (method === 'POST') {
-
-  	    }
-  	  }
-      // res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-      // res.end(util.inspect(url.parse(req.url, true)));
-    }).listen(3002);
+    http.createServer((req, res) => {
+      if (req) {
+        let method = req.method
+        let params
+        let pathname
+        let router = new Router()
+		if (method === 'GET') {
+		  params = url.parse(req.url, true).query
+		  pathname = url.parse(req.url, true).pathname
+		  router.handleParams(req.url)
+		} else if (method === 'POST') {
+          let body = ''
+          req.on('data', chunk => {
+          	body += chunk
+          })
+		  req.on('end', () => {
+		    body = querystring.parse(body)
+		    console.log(body)
+		    // router.handleParams(params)
+		  })
+		}
+      }
+    }).listen(3002)
   }
 
-  handlePathname(pathname) {
 
-  }
 }
