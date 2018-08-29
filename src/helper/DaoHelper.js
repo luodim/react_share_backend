@@ -11,10 +11,15 @@ export default class DaoHelper {
   // 生成数据库连接对象
   static buildConnect() {
     return mysql.createConnection({
-      host:"localhost",
-      user:"root",
-      password:"122544",
-      database:"share_test"
+      // host:"localhost",
+      // user:"root",
+      // password:"122544",
+      // database:"share_test"
+      host:'54.238.237.51',
+      user:'root',
+      password:'122544',
+      database:'share_test_db',
+      port:'3306'
     })
   }
 

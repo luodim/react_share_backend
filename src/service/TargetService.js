@@ -107,7 +107,7 @@ export default class TargetService {
   分页请求target列表数据
   pageIndex:分页查询页数索引
   number:每页请求数目
-  userId:用于查询target列表中的数据是否存在与此userId的任务列表中
+  userId:用于查询target列表中的数据是否存在于此userId的任务列表中
   */
   getTargetList(pageIndex, number, userId, e, en) {
     let target = new TargetDao()

@@ -5,52 +5,57 @@ import DaoHelper from './helper/DaoHelper.js'
 
 export default class Router {
 
-  handleParams(pathname, params, res) {
+  handleParams(pathname, params, body, ev) {
+    this.ev = ev
   	let target
   	let task
   	let user
   	let event = DaoHelper.buildEvents()
   	let eventName
+  	let userId = params !== undefined ? params.user_id : body.user_id
+  	let unionId = params !== undefined ? params.union_id : body.union_id
+  	let checkStatus = params !== undefined ? params.check_state : body.check_state
+  	let name = params !== undefined ? params.name : body.name
+  	let code = params !== undefined ? params.code : body.code
+  	let imgs = params !== undefined ? params.imgs : body.imgs
+  	let imgb = params !== undefined ? params.imgb : body.imgb
+  	let comment = params !== undefined ? params.comment : body.comment
+  	let contributor = params !== undefined ? params.contributor : body.contributor
     switch (pathname) {
 	  case '/api/login':
-	    if (params) {
-          user = new UserService()
-          eventName = 'veridfyIdCB'
-          this.bindEvent(event, eventName)
-          user.verifyUserId(params.user_id, event, eventName)
-	    }
+	    console.log('login api is called')
+      user = new UserService()
+      eventName = 'veridfyIdCB'
+      this.bindEvent(event, eventName)
+      user.verifyUserId(userId, event, eventName)
 	    break
 	  case '/api/home':
-	    if (params) {
-	      target = new TargetService()
-	      eventName = 'getHomeDataListCB'
-	      this.bindEvent(event, eventName)
-	      target.getTargetList(1, 10, params.user_id, event, eventName)
-	    }
+	    console.log('home api is called')
+	    target = new TargetService()
+	    eventName = 'getHomeDataListCB'
+	    this.bindEvent(event, eventName)
+	    target.getTargetList(1, 10, userId, event, eventName)
 	    break
 	  case '/api/task':
-	    if (params) {
-	      task = new TaskService()
-	      eventName = 'getTaskDataListCB'
-	      this.bindEvent(event, eventName)
-	      task.getTaskList(params.user_id, event, eventName)
-	    }
+	    console.log('task api is called')
+	    task = new TaskService()
+	    eventName = 'getTaskDataListCB'
+	    this.bindEvent(event, eventName)
+	    task.getTaskList(userId, event, eventName)
 	    break
 	  case '/api/task-update':
-	    if (params) {
-	      task = new TaskService()
-	      eventName = 'updateTaskCB'
-	      this.bindEvent(event, eventName)
-	      task.updateTask(params.user_id, params.union_id, params.check_state, event, eventName)
-	    }
+	    console.log('task update api is called')
+	    task = new TaskService()
+	    eventName = 'updateTaskCB'
+	    this.bindEvent(event, eventName)
+	    task.updateTask(userId, unionId, checkStatus, event, eventName)
 	    break
 	  case '/api/upload-data':
-	    if (params) {
-	      target = new TargetService()
-	      eventName = 'uploadTargetCB'
-	      this.bindEvent(event, eventName)
-	      target.uploadTargetData(params.name, params.code, params.imgs, params.imgb, params.comment, params.contributor, event, eventName)
-	    }
+	    console.log('upload-data api is called')
+	    target = new TargetService()
+	    eventName = 'uploadTargetCB'
+	    this.bindEvent(event, eventName)
+	    target.uploadTargetData(name, code, imgs, imgb, comment, contributor, event, eventName)
 	    break
     }
   }
@@ -58,12 +63,10 @@ export default class Router {
   bindEvent(event, eventName) {
   	if (event) {
       event.on(eventName, result => {
-        this.handleEventCB(result)
+        if (this.ev) {
+          this.ev.emit('serviceCB', JSON.stringify(result))
+        }
       })
   	}
-  }
-
-  handleEventCB(result) {
-    console.log(result)
   }
 }
