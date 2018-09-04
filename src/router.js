@@ -12,50 +12,58 @@ export default class Router {
   	let user
   	let event = DaoHelper.buildEvents()
   	let eventName
+    let invitationCode = params !== undefined ? params.invitation_code : body.invitation_code
   	let userId = params !== undefined ? params.user_id : body.user_id
   	let unionId = params !== undefined ? params.union_id : body.union_id
   	let checkStatus = params !== undefined ? params.check_state : body.check_state
   	let name = params !== undefined ? params.name : body.name
   	let code = params !== undefined ? params.code : body.code
-  	let imgs = params !== undefined ? params.imgs : body.imgs
-  	let imgb = params !== undefined ? params.imgb : body.imgb
+  	let imgRes = params !== undefined ? params.img_res : body.img_res
   	let comment = params !== undefined ? params.comment : body.comment
   	let contributor = params !== undefined ? params.contributor : body.contributor
+    let fingerCode = params !== undefined ? params.fingerCode : body.finger_code
     switch (pathname) {
 	  case '/api/login':
-	    console.log('login api is called')
       user = new UserService()
       eventName = 'veridfyIdCB'
       this.bindEvent(event, eventName)
-      user.verifyUserId(userId, event, eventName)
+      user.verifyInvitationCode(invitationCode, fingerCode, event, eventName)
 	    break
-	  case '/api/home':
-	    console.log('home api is called')
+	  case '/api/home': // 获取首页数据
 	    target = new TargetService()
 	    eventName = 'getHomeDataListCB'
 	    this.bindEvent(event, eventName)
 	    target.getTargetList(1, 10, userId, event, eventName)
 	    break
-	  case '/api/task':
-	    console.log('task api is called')
+	  case '/api/task': // 获取任务列表
 	    task = new TaskService()
 	    eventName = 'getTaskDataListCB'
 	    this.bindEvent(event, eventName)
 	    task.getTaskList(userId, event, eventName)
 	    break
-	  case '/api/task-update':
-	    console.log('task update api is called')
+	  case '/api/task-update': // 更新任务列表状态（完成/未完成）
 	    task = new TaskService()
 	    eventName = 'updateTaskCB'
 	    this.bindEvent(event, eventName)
 	    task.updateTask(userId, unionId, checkStatus, event, eventName)
 	    break
-	  case '/api/upload-data':
-	    console.log('upload-data api is called')
+    case '/api/task-del': // 删除任务
+      task = new TaskService()
+      eventName = 'delTaskCB'
+      this.bindEvent(event, eventName)
+      task.deleteTask(userId, unionId, event, eventName)
+      break
+    case '/api/task-add': // 添加任务
+      task = new TaskService()
+      eventName = 'addTaskCB'
+      this.bindEvent(event, eventName)
+      task.addTask(userId, unionId, event, eventName)
+      break
+	  case '/api/upload-data': // 上传目标数据
 	    target = new TargetService()
 	    eventName = 'uploadTargetCB'
 	    this.bindEvent(event, eventName)
-	    target.uploadTargetData(name, code, imgs, imgb, comment, contributor, event, eventName)
+	    target.uploadTargetData(name, code, imgRes, comment, contributor, event, eventName)
 	    break
     }
   }

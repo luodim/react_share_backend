@@ -1,4 +1,6 @@
 import mysql from 'mysql'
+import fs from 'fs'
+import path from 'path'
 
 export default class DaoHelper {
 
@@ -60,17 +62,17 @@ export default class DaoHelper {
           Object.keys(objArray).map(v => {
             let obj = objArray[v]
             let objKeyArray = Object.keys(obj)
-            if (objKeyArray.length > 0) {
-              objKeyArray.map(v => {console.log(`data-${v}:${obj[v]}`)})
-            } else {
-              console.log(`data-null`)
-            }
+            // if (objKeyArray.length > 0) {
+            //   objKeyArray.map(v => {console.log(`data-${v}:${obj[v]}`)})
+            // } else {
+            //   console.log(`data-null`)
+            // }
           })
         } else {
           console.log(`dataList-null`)
         }
       }
-      console.log(`json ${value}:${json[value]}`)
+      // console.log(`json ${value}:${json[value]}`)
     })
     return json
   }
@@ -88,11 +90,28 @@ export default class DaoHelper {
   }
 
   // 设置状态及message字段
-  static setStatusMessage(valueArray, isSuccess) {
-    let message = isSuccess ? 'success' : 'fail'
+  static setStatusMessage(valueArray, isSuccess, m) {
+    let message
+    if (m) {
+      message = m
+    } else {
+      message = isSuccess ? 'success' : 'fail'
+    }
     let status = isSuccess ? '200' : '400'
     valueArray.push(message)
     valueArray.push(status)
     return valueArray
+  }
+
+  // 创建多集目录
+  static mkDirs (dirname) {
+    if(fs.existsSync(dirname)){
+      return true;
+    } else {
+        if(this.mkDirs(path.dirname(dirname))) {
+          fs.mkdirSync(dirname);
+          return true;
+        }
+    }
   }
 }

@@ -7,7 +7,7 @@ export default class TargetService {
   /*
   上传目标数据
   */
-  uploadTargetData(name, code, imgS, imgB, comment, contributor, e, en) {
+  uploadTargetData(name, code, imgRes, comment, contributor, e, en) {
     let uuid = DaoHelper.getUUID()
     let target = new TargetDao()
     let event = DaoHelper.buildEvents()
@@ -26,7 +26,7 @@ export default class TargetService {
       DaoHelper.setDataTime(valueArray, dataList)
       e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
-    target.uploadTargetData(name, code, uuid, imgS, imgB, comment, contributor, event, eventName)
+    target.uploadTargetData(name, code, uuid, imgRes, comment, contributor, event, eventName)
   }
 
   /*

@@ -5,11 +5,11 @@ export default class TargetDao {
   /*
   上传目标数据
   */
-  uploadTargetData(name, code, unionId, imgS, imgB, comment, contributor, event, eventName) {
+  uploadTargetData(name, code, unionId, imgRes, comment, contributor, event, eventName) {
     const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO target_table(name, code, union_id, img_res_small, img_res_big, comment, contributor)'
-    +` VALUES(?, ?, ?, ?, ?, ?, ?)`
-    let addSqlParams = [name, code, unionId, imgS, imgB, comment, contributor]
+    let addSql = 'INSERT INTO target_table(name, code, union_id, img_res, comment, contributor)'
+    +` VALUES(?, ?, ?, ?, ?, ?)`
+    let addSqlParams = [name, code, unionId, imgRes, comment, contributor]
     c.query(addSql, addSqlParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
       DaoHelper.handleEvent(result, event, eventName)

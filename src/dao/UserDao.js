@@ -4,18 +4,15 @@ export default class UserDao {
 
   /*
   添加user id
-  userIdArray:user_id array
-  admin权限
+  userId:用户id
+  invitationCode:此账户生成的邀请码
+  invitationCodeRelated:此账户注册时使用的邀请码
+  fingerCode:设备指纹码
   */
-  addUserId(userIdArray, event, eventName) {
+  addUserId(userId, invitationCode, invitationCodeRelated, fingerCode, event, eventName) {
     const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO user_table(user_id) VALUES'
-    let addSqlParams = []
-    for (let id of userIdArray) {
-      addSql += '(?),'
-      addSqlParams.push(id)
-    }
-    addSql = addSql.substring(0, addSql.length - 1)
+    let addSql = 'INSERT INTO user_table(user_id, invitation_code, invitation_code_related, finger_code) VALUES(?, ?, ?, ?)'
+    let addSqlParams = [userId, invitationCode, invitationCodeRelated, fingerCode]
     c.query(addSql, addSqlParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
       event.emit(eventName, result)
@@ -60,7 +57,6 @@ export default class UserDao {
     }
     endSql = endSql.substring(0, endSql.length - 1)
     updateSql += `END WHERE user_id IN (${endSql})`
-    console.log(`update sql is ${updateSql}`)
 
     c.query(updateSql, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
@@ -70,13 +66,26 @@ export default class UserDao {
   }
 
   // 更新邀请码
-  updateInvationCode(invationCode, userId) {
+  updateinvitationCode(invitationCode, userId) {
     const c = DaoHelper.buildConnect()
-    let updateSql = 'UPDATE user_table SET invation_code=? WHERE user_id=?'
-    let updateSqlParams = [invationCode, userId]
+    let updateSql = 'UPDATE user_table SET invitation_code=? WHERE user_id=?'
+    let updateSqlParams = [invitationCode, userId]
     c.query(querySql, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
-      console.log('update invation code is success')
+    })
+    c.end()
+  }
+
+  // 查询邀请码，分两种模式
+  // mode === invitation:查询生成此邀请码的用户
+  // mode === invitation_related:查询使用此邀请码注册的用户
+  verifyInvitationCode(invitationCode, mode, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let querySql = mode === 'invitation' ? `SELECT user_id FROM user_table WHERE invitation_code='?'` : `SELECT user_id FROM user_table WHERE invitation_code_related='?'`
+    let querySqlParams = [invitationCode]
+    c.query(querySql, querySqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
     })
     c.end()
   }
@@ -87,7 +96,6 @@ export default class UserDao {
   verifyUserId(userId, event, eventName) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT user_id FROM user_table WHERE user_id='${userId}'`
-    console.log(`querySql is ${querySql}`)
     c.query(querySql, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
       event.emit(eventName, result)
