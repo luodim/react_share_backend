@@ -22,6 +22,8 @@ export default class UserService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
+      console.log('value array is', valueArray)
+      console.log('fields array is', fieldArray)
       e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     user.addUserId(userId, invitationCode, invitationCodeRelated, fingerCode, event, eventName)
@@ -86,11 +88,14 @@ export default class UserService {
     event.on(eventName, result => {
       fieldArray = ['message', 'status', 'data', 'timestamp']
       if (result && Object.keys(result).length > 0) { // 指纹码存在
-        this.cbBuild(valueArray, true, result, dataList, fields, e, en)
+        console.log('finger code is exist')
+        console.log('result is-----', result)
+        this.cbBuild(valueArray, true, result, dataList, fieldArray, e, en)
       } else { // 指纹码不存在
-        this.cbBuild(valueArray, false, result, dataList, fields, e, en)
+        this.cbBuild(valueArray, false, result, dataList, fieldArray, e, en)
       }
     })
+    user.verifyFingerCode(fingerCode, event, eventName)
   }
 
   // 查询邀请码
@@ -102,13 +107,15 @@ export default class UserService {
     let dataList = []
     let fields
     event.on(eventName, result => {
-      fields = ['message', 'status', 'isValid', 'data', 'timestamp']
+      fields = ['message', 'status', 'data', 'timestamp']
       if (result && Object.keys(result).length > 0) { // 邀请码有效
+        console.log('invitation code is valid')
         // 查询是否存在使用此邀请码注册的账号------------------------------------------------
         let ev2 = DaoHelper.buildEvents()
         let en2 = 'queryInvitationRelatedCB'
         ev2.on(en2, r => {
           if (r && Object.keys(r).length > 0) { // 账户存在
+            console.log('account is exist----')
             // 验证设备指纹=============================================================
             let ev0 = DaoHelper.buildEvents()
             let en0 = 'verifyFingerCodeServiceCB'
@@ -123,7 +130,7 @@ export default class UserService {
           } else { // 账户不存在，新建账户~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             let ev3 = DaoHelper.buildEvents()
             let en3 = 'addNewUserCB'
-            ev3.on(ev3, rr => {
+            ev3.on(en3, rr => {
               if (rr && rr['status'] === '200') { // 创建新用户成功
                 this.cbBuild(valueArray, true, r, dataList, fields, e, en, '新用户创建成功')
               } else { // 创建新用户失败
@@ -137,6 +144,7 @@ export default class UserService {
         user.verifyInvitationCode(invitationCode, 'invitation_related', ev2, en2)
         //-----------------------------------------------------------------------------
       } else { // 邀请码无效
+        console.log('invitation code is invalid-----')
         this.cbBuild(valueArray, false, result, dataList, fields, e, en, '无效的邀请码，请重新输入')
       }
     })
@@ -145,8 +153,7 @@ export default class UserService {
 
   cbBuild(valueArray, isSuccess, result, dataList, fields, e, en, message) {
     valueArray = DaoHelper.setStatusMessage(valueArray, isSuccess, message)
-    valueArray.push(isSuccess)
-    dataList.push(result[0])
+    if (result[0]) {dataList.push(result[0])}
     DaoHelper.setDataTime(valueArray, dataList)
     e.emit(en, DaoHelper.buildJson(fields, valueArray))
   }

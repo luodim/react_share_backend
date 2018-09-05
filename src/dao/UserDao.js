@@ -81,8 +81,20 @@ export default class UserDao {
   // mode === invitation_related:查询使用此邀请码注册的用户
   verifyInvitationCode(invitationCode, mode, event, eventName) {
     const c = DaoHelper.buildConnect()
-    let querySql = mode === 'invitation' ? `SELECT user_id FROM user_table WHERE invitation_code='?'` : `SELECT user_id FROM user_table WHERE invitation_code_related='?'`
+    let querySql = mode === 'invitation' ? `SELECT * FROM user_table WHERE invitation_code=?` : `SELECT * FROM user_table WHERE invitation_code_related=?`
     let querySqlParams = [invitationCode]
+    c.query(querySql, querySqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
+  }
+
+  // 查询设备指纹码
+  verifyFingerCode(fingerCode, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let querySql = 'SELECT * FROM user_table WHERE finger_code=?'
+    let querySqlParams = [fingerCode]
     c.query(querySql, querySqlParams, (err, result) => {
       if (DaoHelper.handleError(err, event, eventName)) return
       event.emit(eventName, result)

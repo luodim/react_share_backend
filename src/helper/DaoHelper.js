@@ -55,25 +55,7 @@ export default class DaoHelper {
     for (let i = 0; i < fieldArray.length; i++) {
       json[fieldArray[i]] = valueArray[i]
     }
-    Object.keys(json).map(value => {
-      if (value === 'data') {
-        let objArray = json[value]
-        if (objArray.length > 0) {
-          Object.keys(objArray).map(v => {
-            let obj = objArray[v]
-            let objKeyArray = Object.keys(obj)
-            // if (objKeyArray.length > 0) {
-            //   objKeyArray.map(v => {console.log(`data-${v}:${obj[v]}`)})
-            // } else {
-            //   console.log(`data-null`)
-            // }
-          })
-        } else {
-          console.log(`dataList-null`)
-        }
-      }
-      // console.log(`json ${value}:${json[value]}`)
-    })
+    console.log('data length is', json['data'].length)
     return json
   }
 

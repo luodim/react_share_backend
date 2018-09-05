@@ -72,6 +72,7 @@ export default class Router {
   	if (event) {
       event.on(eventName, result => {
         if (this.ev) {
+          console.log(result)
           this.ev.emit('serviceCB', JSON.stringify(result))
         }
       })
