@@ -5,6 +5,7 @@ import Router from './router.js'
 import DaoHelper from './helper/DaoHelper.js'
 import formidable from 'formidable'
 import path from 'path'
+import fs from 'fs'
 
 export default class Server {
 
@@ -16,10 +17,13 @@ export default class Server {
         let pathname
         let body = ''
         if (method === 'GET') {
+          console.log('/////////request method is GET//////////')
           params = url.parse(req.url, true).query
           pathname = url.parse(req.url, true).pathname
           this.handleReqRes(pathname, params, body, res)
         } else if (method === 'POST') {
+          console.log('/////////request method is POST/////////')
+          console.log('content type is', req.headers['content-type'])
           let isFormData = (req.headers['content-type']).includes('multipart/form-data')
           if (isFormData) {
             this.handleFormDataParse(req, res)
@@ -48,13 +52,23 @@ export default class Server {
     DaoHelper.mkDirs(targetDir)
     form.uploadDir = targetDir
     form.encoding = 'utf-8'
+    form.keepExtensions = true
     form.parse(req, (err, fields, files) => {
       if (err) {
         console.log(err)
       } else {
         body = fields
-        body['img_res'] = files.img_res.path
-        this.handleReqRes(pathname, params, body, res)
+        if (files && files.img_res) {
+          let oldpath = files.img_res.path
+          let newpath = `${files.img_res.path}.jpg`
+            fs.rename(oldpath,newpath,(err) => {
+                if(err) {body['img_res'] = undefined}
+                body['img_res'] = `http://54.238.237.51/${DaoHelper.getRelativePath(files.img_res.path)}.jpg`
+                this.handleReqRes(pathname, params, body, res)
+            })
+        } else {
+          this.handleReqRes(pathname, params, body, res)
+        }
       }
     })
   }
@@ -63,6 +77,8 @@ export default class Server {
     let router = new Router()
     let event = DaoHelper.buildEvents()
     event.on('serviceCB', result => {
+      res.setHeader("Access-Control-Allow-Origin", "*")
+      res.setHeader("Access-Control-Allow-Headers", "X-Requested-With")
       res.writeHead(200, {"Content-Type": "application/json"})
       res.end(result)
       console.log(result)

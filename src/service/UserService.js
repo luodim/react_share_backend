@@ -21,10 +21,17 @@ export default class UserService {
       } else {
         DaoHelper.setStatusMessage(valueArray, false)
       }
-      DaoHelper.setDataTime(valueArray, dataList)
-      console.log('value array is', valueArray)
-      console.log('fields array is', fieldArray)
-      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
+      // 获取新增用户信息
+      let ev0 = DaoHelper.buildEvents()
+      let en0 = 'getNewUserInfoCB'
+      ev0.on(en0, r => {
+        if (r && Object.keys(r).length > 0) { // 指纹码存在
+          if (r[0]) {dataList.push(r[0])}
+        }
+        DaoHelper.setDataTime(valueArray, dataList)
+        e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
+      })
+      user.verifyFingerCode(fingerCode, ev0, en0)
     })
     user.addUserId(userId, invitationCode, invitationCodeRelated, fingerCode, event, eventName)
   }
@@ -72,6 +79,7 @@ export default class UserService {
         DaoHelper.setStatusMessage(valueArray, false)
       }
       DaoHelper.setDataTime(valueArray, dataList)
+      console.log(`value array is `, valueArray)
       e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
     })
     user.updateUserId(curUserIdArray, newUserIdArray, event, eventName)
@@ -120,7 +128,8 @@ export default class UserService {
             let ev0 = DaoHelper.buildEvents()
             let en0 = 'verifyFingerCodeServiceCB'
             ev0.on(en0, rrr => {
-              if (rrr && rrr.status === '200') { // 指纹码匹配
+              if (rrr && rrr.status === '200' && rrr.data[0].invitation_code_related === invitationCode) { // 指纹码在数据库中存在且与其相关联邀请码与输入的邀请码一致
+                console.log('related code is--========',rrr.data[0].invitation_code_related)
                 this.cbBuild(valueArray, true, r, dataList, fields, e, en, '设备指纹码匹配成功')
               } else { // 指纹码不匹配
                 this.cbBuild(valueArray, false, r, dataList, fields, e, en, '测试阶段为了减轻服务器压力仅支持单设备登录，请使用首次注册所用设备登录')
@@ -132,6 +141,7 @@ export default class UserService {
             let en3 = 'addNewUserCB'
             ev3.on(en3, rr => {
               if (rr && rr['status'] === '200') { // 创建新用户成功
+                dataList = rr.data
                 this.cbBuild(valueArray, true, r, dataList, fields, e, en, '新用户创建成功')
               } else { // 创建新用户失败
                 this.cbBuild(valueArray, false, r, dataList, fields, e, en, '新用户创建失败，请重试')
