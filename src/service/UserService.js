@@ -114,6 +114,7 @@ export default class UserService {
     let valueArray = []
     let dataList = []
     let fields
+    console.log('invitation code is ', invitationCode)
     event.on(eventName, result => {
       fields = ['message', 'status', 'data', 'timestamp']
       if (result && Object.keys(result).length > 0) { // 邀请码有效

@@ -1,5 +1,6 @@
 import TaskDao from '../dao/TaskDao.js'
 import DaoHelper from '../helper/DaoHelper.js'
+import TargetDao from '../dao/TargetDao.js'
 
 export default class TaskService {
 
@@ -95,13 +96,29 @@ export default class TaskService {
       if (result && Object.keys(result).length > 0) {
         valueArray = DaoHelper.setStatusMessage(valueArray, true)
         Object.keys(result).map(v => {
-          dataList.push(result[v])
+          // 根据获取对象的union id调用target service获取name, code, img_res等数据
+          let targetDao = new TargetDao()
+          let evv = DaoHelper.buildEvents()
+          let enn = 'getTargetDaoCB'
+          evv.on(enn, (r) => {
+            if (r && Object.keys(r).length > 0) {
+               result[v]['target'] = r
+            } else {
+               result[v]['target'] = {}
+            }
+            dataList.push(result[v])
+            if (dataList.length === Object.keys(result).length) {
+              DaoHelper.setDataTime(valueArray, dataList)
+              e.emit(en, DaoHelper.buildJson(fields, valueArray))
+            }
+          })
+          targetDao.getTargetData(result[v].union_id, evv, enn)
         })
       } else {
         valueArray = DaoHelper.setStatusMessage(valueArray, false)
+        DaoHelper.setDataTime(valueArray, dataList)
+        e.emit(en, DaoHelper.buildJson(fields, valueArray))
       }
-      DaoHelper.setDataTime(valueArray, dataList)
-      e.emit(en, DaoHelper.buildJson(fields, valueArray))
     })
     task.getTaskList(userId, event, eventName)
   }

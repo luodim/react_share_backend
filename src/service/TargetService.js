@@ -90,6 +90,7 @@ export default class TargetService {
     let valueArray = []
     let dataList = []
     event.on(eventName, (result) => {
+      console.log('target service get the cb')
       fields = ['message', 'status', 'data', 'timestamp']
       if (result && Object.keys(result).length > 0) {
         DaoHelper.setStatusMessage(valueArray, true)

@@ -63,7 +63,7 @@ export default class Server {
           let newpath = `${files.img_res.path}.jpg`
             fs.rename(oldpath,newpath,(err) => {
                 if(err) {body['img_res'] = undefined}
-                body['img_res'] = `http://54.238.237.51/${DaoHelper.getRelativePath(files.img_res.path)}.jpg`
+                body['img_res'] = `http://54.238.237.51${DaoHelper.getRelativePath(files.img_res.path)}.jpg`
                 this.handleReqRes(pathname, params, body, res)
             })
         } else {
