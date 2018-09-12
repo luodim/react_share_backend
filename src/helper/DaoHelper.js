@@ -17,6 +17,8 @@ export default class DaoHelper {
       user:'root',
       password:'122544',
       database:'share_test_db',
+      charset: "utf8mb4",
+      collate: "utf8mb4_unicode_ci",
       port:'3306'
     })
   }
@@ -55,7 +57,7 @@ export default class DaoHelper {
     return json
   }
 
-  // todo处理组装完成数据后的回调
+  // 处理组装完成数据后的回调
   static handleEvent(result, event, eventName) {
     if (event) event.emit(eventName, result)
   }
@@ -70,7 +72,7 @@ export default class DaoHelper {
   // 设置状态及message字段
   static setStatusMessage(valueArray, isSuccess, m) {
     let message
-    if (m) {
+    if (m && m !== '') {
       message = m
     } else {
       message = isSuccess ? 'success' : 'fail'

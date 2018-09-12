@@ -41,6 +41,18 @@ export default class UserDao {
     c.end()
   }
 
+  // 根据user id获取用户信息
+  getUserInfo(userId, event, eventName) {
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT * FROM user_table WHERE user_id=?`
+    let querySqlParams = [userId]
+    c.query(querySql, querySqlParams, (err, result) => {
+      if (DaoHelper.handleError(err, event, eventName)) return
+      event.emit(eventName, result)
+    })
+    c.end()
+  }
+
   /*
   更新user id数值
   curUserIdArray:目标userId array

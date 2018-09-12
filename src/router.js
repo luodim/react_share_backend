@@ -65,6 +65,11 @@ export default class Router {
 	    this.bindEvent(event, eventName)
 	    target.uploadTargetData(name, code, imgRes, comment, contributor, event, eventName)
 	    break
+    case '/api/user-info':
+      user = new UserService()
+      eventName = 'getUserInfoCB'
+      this.bindEvent(event, eventName)
+      user.getUserInfo(userId, event, eventName)
     }
   }
 

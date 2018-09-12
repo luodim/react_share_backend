@@ -147,8 +147,8 @@ export default class TargetService {
           this.handleBuild(dataList, fields, valueArray, e, en)
         })
       } else {
-        valueArray = DaoHelper.statusMessageSet(valueArray, true)
-        this.handleBuild(datalist, fields, valueArray, e, en)
+        valueArray = DaoHelper.setStatusMessage(valueArray, true)
+        this.handleBuild(dataList, fields, valueArray, e, en)
       }
     })
     target.getTargetList(pageIndex, number, eventTarget, eventTargetName)

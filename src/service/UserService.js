@@ -60,6 +60,25 @@ export default class UserService {
     user.deleteUserId(userIdArray, event, eventName)
   }
 
+  // 根据user id获取用户信息
+  getUserInfo(userId, e, en) {
+    let user = new UserDao()
+    let event = DaoHelper.buildEvents()
+    let eventName = 'getUserInfoDaoCB'
+    let fieldArray
+    let valueArray = []
+    let dataList = []
+    event.on(eventName, result => {
+      fieldArray = ['message', 'status', 'data', 'timestamp']
+      if (result && Object.keys(result).length > 0) {
+        this.cbBuild(valueArray, true, result, dataList, fieldArray, e, en)
+      } else {
+        this.cbBuild(valueArray, false, result, dataList, fieldArray, e, en)
+      }
+    })
+    user.getUserInfo(userId, event, eventName)
+  }
+
   /*
   更新user id数值
   admin权限，可批量化操作
@@ -110,56 +129,51 @@ export default class UserService {
   verifyInvitationCode(invitationCode, fingerCode, e, en) {
     let user = new UserDao()
     let event = DaoHelper.buildEvents()
-    let eventName = 'quertInvitationCodeCB'
+    let eventName = 'queryInvitationRelatedCB'
     let valueArray = []
     let dataList = []
     let fields
-    console.log('invitation code is ', invitationCode)
     event.on(eventName, result => {
       fields = ['message', 'status', 'data', 'timestamp']
-      if (result && Object.keys(result).length > 0) { // 邀请码有效
+      if (result && Object.keys(result).length > 0) { // 邀请码通过invitation_code_related字段找到
         console.log('invitation code is valid')
-        // 查询是否存在使用此邀请码注册的账号------------------------------------------------
-        let ev2 = DaoHelper.buildEvents()
-        let en2 = 'queryInvitationRelatedCB'
-        ev2.on(en2, r => {
-          if (r && Object.keys(r).length > 0) { // 账户存在
-            console.log('account is exist----')
-            // 验证设备指纹=============================================================
-            let ev0 = DaoHelper.buildEvents()
-            let en0 = 'verifyFingerCodeServiceCB'
-            ev0.on(en0, rrr => {
-              if (rrr && rrr.status === '200' && rrr.data[0].invitation_code_related === invitationCode) { // 指纹码在数据库中存在且与其相关联邀请码与输入的邀请码一致
-                console.log('related code is--========',rrr.data[0].invitation_code_related)
-                this.cbBuild(valueArray, true, r, dataList, fields, e, en, '设备指纹码匹配成功')
-              } else { // 指纹码不匹配
-                this.cbBuild(valueArray, false, r, dataList, fields, e, en, '测试阶段为了减轻服务器压力仅支持单设备登录，请使用首次注册所用设备登录')
-              }
-            })
-            this.verifyFingerCode(fingerCode, ev0, en0)
-          } else { // 账户不存在，新建账户~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // 验证设备指纹=============================================================
+        let ev0 = DaoHelper.buildEvents()
+        let en0 = 'verifyFingerCodeServiceCB'
+        ev0.on(en0, r0 => {
+          if (r0 && r0.status === '200' && r0.data[0].invitation_code_related === invitationCode) { // 指纹码在数据库中存在且与其相关联邀请码与输入的邀请码一致
+            this.cbBuild(valueArray, true, result, dataList, fields, e, en, '设备指纹码匹配成功')
+          } else { // 指纹码不匹配
+            this.cbBuild(valueArray, false, result, dataList, fields, e, en, '测试阶段为了减轻服务器压力仅支持单设备登录，请使用首次注册所用设备登录')
+          }
+        })
+        this.verifyFingerCode(fingerCode, ev0, en0)
+      } else { // 邀请码未能通过invitation_code_related字段找到~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // 查询invitation_code字段，能查到说明此邀请码还未注册账户，服务器生成新账户；无结果说明此为非法邀请码
+        let ev4 = DaoHelper.buildEvents()
+        let en4 = 'queryInvitationCB'
+        ev4.on(en4, r4 => {
+          if (r4 && Object.keys(r4).length > 0) {// 有结果，创建账户-----------------------------------------
             let ev3 = DaoHelper.buildEvents()
             let en3 = 'addNewUserCB'
-            ev3.on(en3, rr => {
-              if (rr && rr['status'] === '200') { // 创建新用户成功
-                dataList = rr.data
-                this.cbBuild(valueArray, true, r, dataList, fields, e, en, '新用户创建成功')
+            ev3.on(en3, r3 => {
+              if (r3 && r3['status'] === '200') { // 创建新用户成功
+                dataList = r3.data
+                this.cbBuild(valueArray, true, r3, dataList, fields, e, en, '新用户创建成功')
               } else { // 创建新用户失败
-                this.cbBuild(valueArray, false, r, dataList, fields, e, en, '新用户创建失败，请重试')
+                this.cbBuild(valueArray, false, r3, dataList, fields, e, en, '新用户创建失败，请重试')
               }
             })
             this.addUserId(DaoHelper.getUUID(), DaoHelper.getUUID(), invitationCode, fingerCode, ev3, en3)
-            //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          } else { // 无结果，非法验证码---------------------------------------------------------------------
+            console.log('invitation code is invalid-----')
+            this.cbBuild(valueArray, false, result, dataList, fields, e, en, '无效的邀请码，请重新输入')
           }
         })
-        user.verifyInvitationCode(invitationCode, 'invitation_related', ev2, en2)
-        //-----------------------------------------------------------------------------
-      } else { // 邀请码无效
-        console.log('invitation code is invalid-----')
-        this.cbBuild(valueArray, false, result, dataList, fields, e, en, '无效的邀请码，请重新输入')
+        user.verifyInvitationCode(invitationCode, 'invitation', ev4, en4)
       }
     })
-    user.verifyInvitationCode(invitationCode, 'invitation', event, eventName)
+    user.verifyInvitationCode(invitationCode, 'invitation_related', event, eventName)
   }
 
   cbBuild(valueArray, isSuccess, result, dataList, fields, e, en, message) {
