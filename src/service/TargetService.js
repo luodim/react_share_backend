@@ -144,6 +144,7 @@ export default class TargetService {
             result[v]['is_in_task'] = taskUnionIdList.indexOf(result[v]['union_id']) === -1 ? false : true
             dataList.push(result[v])
           })
+          dataList.reverse()
           this.handleBuild(dataList, fields, valueArray, e, en)
         })
       } else {
