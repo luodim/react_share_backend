@@ -3,24 +3,6 @@ import DaoHelper from '../helper/DaoHelper.js'
 export default class UserDao {
 
   /*
-  添加user id
-  userId:用户id
-  invitationCode:此账户生成的邀请码
-  invitationCodeRelated:此账户注册时使用的邀请码
-  fingerCode:设备指纹码
-  */
-  addUserId(userId, invitationCode, invitationCodeRelated, fingerCode, event, eventName) {
-    const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO user_table(user_id, invitation_code, invitation_code_related, finger_code) VALUES(?, ?, ?, ?)'
-    let addSqlParams = [userId, invitationCode, invitationCodeRelated, fingerCode]
-    c.query(addSql, addSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
-  }
-
-  /*
   根据userId参数删除对应userId
   userIdArray:user_id array
   admin权限
@@ -34,23 +16,7 @@ export default class UserDao {
       deleteSqlParams.push(id)
     }
     deleteSql = deleteSql.substring(0, deleteSql.length - 3)
-    c.query(deleteSql, deleteSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
-  }
-
-  // 根据user id获取用户信息
-  getUserInfo(userId, event, eventName) {
-    const c = DaoHelper.buildConnect()
-    let querySql = `SELECT * FROM user_table WHERE user_id=?`
-    let querySqlParams = [userId]
-    c.query(querySql, querySqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
+    return DaoHelper.handleDaoQuery(c, deleteSql, deleteSqlParams)
   }
 
   /*
@@ -69,61 +35,36 @@ export default class UserDao {
     }
     endSql = endSql.substring(0, endSql.length - 1)
     updateSql += `END WHERE user_id IN (${endSql})`
-
-    c.query(updateSql, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
+    return DaoHelper.handleDaoQuery(c, updateSql)
   }
 
-  // 更新邀请码
-  updateinvitationCode(invitationCode, userId) {
+  // 通过userId获取用户信息
+  getUserInfoByUserId(userId) {
     const c = DaoHelper.buildConnect()
-    let updateSql = 'UPDATE user_table SET invitation_code=? WHERE user_id=?'
-    let updateSqlParams = [invitationCode, userId]
-    c.query(querySql, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-    })
-    c.end()
+    let querySql = `SELECT * FROM user_table2 WHERE user_id=?`
+    let querySqlParams = [userId]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 
-  // 查询邀请码，分两种模式
-  // mode === invitation:查询生成此邀请码的用户
-  // mode === invitation_related:查询使用此邀请码注册的用户
-  verifyInvitationCode(invitationCode, mode, event, eventName) {
+  // 通过邀请码获取用户信息
+  getUserInfoByInvitationCode(invitationCode) {
     const c = DaoHelper.buildConnect()
-    let querySql = mode === 'invitation' ? `SELECT * FROM user_table WHERE invitation_code=?` : `SELECT * FROM user_table WHERE invitation_code_related=?`
+    let querySql = 'SELECT * FROM user_table2 WHERE invitation_code_related=?'
     let querySqlParams = [invitationCode]
-    c.query(querySql, querySqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 
-  // 查询设备指纹码
-  verifyFingerCode(fingerCode, event, eventName) {
+  // 创建新用户
+  addUser(userId, invitationCode, fingerCode, nickname) {
     const c = DaoHelper.buildConnect()
-    let querySql = 'SELECT * FROM user_table WHERE finger_code=?'
-    let querySqlParams = [fingerCode]
-    c.query(querySql, querySqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
+    let addSql = 'INSERT INTO user_table2(user_id, invitation_code_related, finger_code, nickname) VALUES(?, ?, ?, ?)'
+    let addSqlParams = [userId, invitationCode, fingerCode, nickname]
+    return DaoHelper.handleDaoQuery(c, addSql, addSqlParams)
   }
 
-  /*
-  验证传入的userId是否有效（是否在user table）
-  */
-  verifyUserId(userId, event, eventName) {
+  getUserList() {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT user_id FROM user_table WHERE user_id='${userId}'`
-    c.query(querySql, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      event.emit(eventName, result)
-    })
-    c.end()
+    let querySql = 'SELECT * FROM user_table2'
+    return DaoHelper.handleDaoQuery(c, querySql)
   }
 }

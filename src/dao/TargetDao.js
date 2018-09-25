@@ -2,39 +2,54 @@ import DaoHelper from '../helper/DaoHelper.js'
 
 export default class TargetDao {
 
+  // /*
+  // 上传目标数据
+  // */
+  // uploadTargetData(name, code, unionId, imgRes, comment, contributor, event, eventName) {
+  //   const c = DaoHelper.buildConnect()
+  //   let addSql = 'INSERT INTO target_table(name, code, union_id, img_res, comment, contributor)'
+  //   +` VALUES(?, ?, ?, ?, ?, ?)`
+  //   let addSqlParams = [name, code, unionId, imgRes, comment, contributor]
+  //   c.query(addSql, addSqlParams, (err, result) => {
+  //     if (DaoHelper.handleError(err, event, eventName)) return
+  //     DaoHelper.handleEvent(result, event, eventName)
+  //   })
+  //   c.end()
+  // }
+
   /*
   上传目标数据
+  name:目标名称
+  code:目标编号
+  unionId:目标唯一识别码
+  imgResBig:目标大图
+  imgResSmall：目标小图
+  comment：对目标的评论
+  contributor:目标资料贡献者
+  location:目标所在地点
   */
-  uploadTargetData(name, code, unionId, imgRes, comment, contributor, event, eventName) {
+  uploadTargetData(name, code, unionId, imgResBig, imgResSmall, comment, contributor, location) {
     const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO target_table(name, code, union_id, img_res, comment, contributor)'
-    +` VALUES(?, ?, ?, ?, ?, ?)`
-    let addSqlParams = [name, code, unionId, imgRes, comment, contributor]
-    c.query(addSql, addSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      DaoHelper.handleEvent(result, event, eventName)
-    })
-    c.end()
+    let addSql = 'INSERT INTO target_table(name, code, union_id, img_res, img_res_small, comment, contributor, location)'
+    +` VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+    let addSqlParams = [name, code, unionId, imgResBig, imgResSmall, comment, contributor, location]
+    return DaoHelper.handleDaoQuery(c, addSql, addSqlParams)
   }
 
   /*
   根据unionId删除目标数据
   unionId:目标唯一识别id
   */
-  deleteTargetData(unionIdArray, event, eventName) {
+  deleteTargetData(unionIdArray) {
     const c = DaoHelper.buildConnect()
-    let deleteSql = `DELETE FROM target_table WHERE`
-    let deleteSqlParams = []
+    let delSql = `DELETE FROM target_table WHERE`
+    let delSqlParams = []
     for (let id of unionIdArray) {
-      deleteSql += ' union_id=? OR'
-      deleteSqlParams.push(id)
+      delSql += ' union_id=? OR'
+      delSqlParams.push(id)
     }
-    deleteSql = deleteSql.substring(0, deleteSql.length - 3)
-    c.query(deleteSql, deleteSqlParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      DaoHelper.handleEvent(result, event, eventName)
-    })
-    c.end()
+    delSql = delSql.substring(0, delSql.length - 3)
+    return DaoHelper.handleDaoQuery(c, delSql, delSqlParams)
   }
 
   /*
@@ -42,7 +57,7 @@ export default class TargetDao {
   unionId:目标唯一识别id
   ...field需更新字段
   */
-  updateTargetData(unionId, fieldArray, newValueArray, event, eventName) {
+  updateTargetData(unionId, fieldArray, newValueArray) {
     const c = DaoHelper.buildConnect()
     let updateSql = 'UPDATE target_table SET'
     let endSql = ` WHERE union_id='${unionId}'`
@@ -51,40 +66,31 @@ export default class TargetDao {
     }
     updateSql = updateSql.substring(0, updateSql.length - 1)
     updateSql += endSql
-    c.query(updateSql, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      DaoHelper.handleEvent(result, event, eventName)
-    })
-    c.end()
+    return DaoHelper.handleDaoQuery(c, updateSql)
   }
 
   /*
   根据unionId获取目标数据
   */
-  getTargetData(unionId, event, eventName) {
+  getTargetData(unionId) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT * FROM target_table WHERE union_id=?`
-    let queryParams = [unionId]
-    c.query(querySql, queryParams, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      DaoHelper.handleEvent(result, event, eventName)
-    })
-    c.end()
+    let querySqlParams = [unionId]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 
   /*
-  分页请求target列表数据
-  pageIndex:分页查询页数索引
-  number:每页请求数目
+  根据页面索引及每页请求数量分页请求
+  sinceId:上一次查询获取结果的末位游标
+  number:单页请求数量
+  userId:用户id
   */
-  getTargetList(pageIndex, number, event, eventName) {
+  getTargetList(sinceId, number, userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT * FROM target_table`
-    c.query(querySql, (err, result) => {
-      if (DaoHelper.handleError(err, event, eventName)) return
-      DaoHelper.handleEvent(result, event, eventName)
-    })
-    c.end()
+    let querySql = `SELECT * FROM target_table LEFT JOIN task_table ON target_table.union_id=task_table.union_id`
+    + ` AND task_table.user_id=? WHERE target_table.cursor_id>? LIMIT ?`
+    let querySqlParams = [userId, sinceId, number]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 
 }

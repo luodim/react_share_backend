@@ -8,11 +8,7 @@
     "start": "node ./dist/index.js"
   },
   "dependencies": {
-    "babel": "^6.23.0",
-    "babel-cli": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-latest": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
+    "@babel/polyfill": "^7.0.0",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
@@ -22,5 +18,10 @@
     "mysql": "^2.16.0",
     "path": "^0.12.7",
     "pm2": "^3.0.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0"
   }
 }

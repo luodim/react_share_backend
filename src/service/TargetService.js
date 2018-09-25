@@ -30,28 +30,50 @@ export default class TargetService {
   }
 
   /*
+  上传目标信息服务
+  name:目标名字
+  code:目标编码
+  imgResBig:目标大图链接
+  imgResSmall:目标小图链接
+  comment:对目标的评论
+  contributor:目标信息贡献者
+  location:目标所在位置
+  */
+  async uploadTargetData(name, code, imgResBig, imgResSmall, comment, contributor, location, event, eventName) {
+    let dao = new TargetDao()
+    let fieldArray = ['userId', 'message', 'status', 'data', 'timestamp']
+    let valueArray = []
+    let datalist = []
+    let unionId = DaoHelper.getUUID()
+    let result = await dao.uploadTargetData(name, code, unionId, imgResBig, imgResSmall, comment, contributor, location)
+    if (result && result['affectedRows']) { // 上传成功
+      datalist.push({name:name, code:code, union_id:unionId, img_res_big:imgResBig, img_res_small:imgResSmall, comment:comment, contributor:contributor, location:location})
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else { // 上传失败
+      DaoHelper.setStatusMessage(valueArray, false, '信息上传失败，请重试')
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
+  }
+
+  //---------------------------------------------------------------------------
+
+  /*
   根据unionId删除目标数据
   unionId:目标唯一识别id
   admin权限，支持批量操作
   */
-  deleteTargetData(unionIdArray, e, en) {
-    let target = new TargetDao()
-    let event = DaoHelper.buildEvents()
-    let eventName = 'deleteTargetDaoCB'
-    let fieldArray
+  async deleteTargetData(unionIdArray, event, eventName) {
+    let dao = new TargetDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
-    let dataList = []
-    event.on(eventName, (result) => {
-      fieldArray = ['message', 'status', 'data', 'timestamp']
-      if (result && result['affectedRows']) {
-        DaoHelper.setStatusMessage(valueArray, true)
-      } else {
-        DaoHelper.setStatusMessage(valueArray, false)
-      }
-      DaoHelper.setDataTime(valueArray, dataList)
-      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
-    })
-    target.deleteTargetData(unionIdArray, event, eventName)
+    let datalist = []
+    let result = await dao.deleteTargetData(unionIdArray)
+    if (result && result['affectedRows']) {
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
   /*
@@ -59,105 +81,61 @@ export default class TargetService {
   unionId:目标唯一识别id
   admin权限，暂不开放user操作
   */
-  updateTargetData(unionId, fieldArray, newValueArray, e, en) {
-    let target = new TargetDao()
-    let event = DaoHelper.buildEvents()
-    let eventName = 'updateTargetDaoCB'
-    let fields
+  async updateTargetData(unionId, fieldArray, newValueArray, event, eventName) {
+    let dao = new TargetDao()
+    let fields = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
-    let dataList = []
-    event.on(eventName, (result) => {
-      fields = ['message', 'status', 'data', 'timestamp']
-      if (result && result['affectedRows']) {
-        DaoHelper.setStatusMessage(valueArray, true)
-      } else {
-        DaoHelper.setStatusMessage(valueArray, false)
-      }
-      DaoHelper.setDataTime(valueArray, dataList)
-      e.emit(en, DaoHelper.buildJson(fields, valueArray))
-    })
-    target.updateTargetData(unionId, fieldArray, newValueArray, event, eventName)
+    let datalist = []
+    let result = await dao.updateTargetData(unionId, fieldArray, newValueArray)
+    if (result && result['affectedRows']) {
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fields, valueArray, event, eventName)
   }
 
   /*
   根据unionId获取目标数据
   */
-  getTargetData(unionId, e, en) {
-    let target = new TargetDao()
-    let event = DaoHelper.buildEvents()
-    let eventName = 'getTargetDaoCB'
-    let fields
+  async getTargetData(unionId, event, eventName) {
+    let dao = new TargetDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
-    let dataList = []
-    event.on(eventName, (result) => {
-      console.log('target service get the cb')
-      fields = ['message', 'status', 'data', 'timestamp']
-      if (result && Object.keys(result).length > 0) {
-        DaoHelper.setStatusMessage(valueArray, true)
-        Object.keys(result).map(v => {dataList.push(result[v])})
-      } else {
-        DaoHelper.setStatusMessage(valueArray, false)
-      }
-      DaoHelper.setDataTime(valueArray, dataList)
-      e.emit(em, DaoHelper.buildJson(fields, valueArray))
-    })
-    target.getTargetData(unionId, event, eventName)
+    let datalist = []
+    let result = await dao.getTargetData(unionId)
+    if (result && result.length > 0) {
+      datalist = datalist.concat(result)
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
   /*
-  分页请求target列表数据
-  pageIndex:分页查询页数索引
-  number:每页请求数目
-  userId:用于查询target列表中的数据是否存在于此userId的任务列表中
+  根据页面索引及每页请求数量分页请求
+  sinceId:上一次查询获取结果的末位游标
+  number:单页请求数量
+  userId:用户id
+  event:回调事件
+  eventName:回调事件名称
   */
-  getTargetList(pageIndex, number, userId, e, en) {
-    let target = new TargetDao()
-    let task = new TaskDao()
-    let eventTarget = DaoHelper.buildEvents()
-    let eventTask = DaoHelper.buildEvents()
-    let eventTargetName = 'getTargetListDaoCB'
-    let eventTaskName = 'getTaskListDaoCB'
-
-    // todo---对tasklist中的union id与targetlist中的union id比对---------------
-    // 先查询target list的数据，然后根据userId获取userId对应的task list数据，
-    // 再将task list数据与target list数据比对来确定返回数据中的isInTask字段
-    let fields
+  async getTargetList(sinceId, userId, event, eventName, number = 10) {
+    let dao = new TargetDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
-    let dataList = []
-    eventTarget.on(eventTargetName, (result) => {
-      fields = ['message', 'status', 'data', 'timestamp']
-      if (result && Object.keys(result).length > 0) {
-        // 查询task list
-        task.getTaskList(userId, eventTask, eventTaskName)
-        let taskUnionIdList = []
-        valueArray = DaoHelper.setStatusMessage(valueArray, true)
-        // 任务列表查询数据回调
-        eventTask.on(eventTaskName, (r) => {
-          // 生成task中union id列表
-          if (r && r.length > 0) {
-            Object.keys(r).map(kv => {
-              taskUnionIdList.push(r[kv]['union_id'])
-            })
-          }
-          // 添加target数据到datalist中
-          Object.keys(result).map(v => {
-            result[v]['is_in_task'] = taskUnionIdList.indexOf(result[v]['union_id']) === -1 ? false : true
-            dataList.push(result[v])
-          })
-          dataList.reverse()
-          this.handleBuild(dataList, fields, valueArray, e, en)
-        })
-      } else {
-        valueArray = DaoHelper.setStatusMessage(valueArray, true)
-        this.handleBuild(dataList, fields, valueArray, e, en)
-      }
-    })
-    target.getTargetList(pageIndex, number, eventTarget, eventTargetName)
+    let datalist = []
+    number = parseInt(number)
+    number = number > 100 ? 100 : number
+    let result = await dao.getTargetList(sinceId, number, userId)
+    if (result) {
+      datalist = datalist.concat(result)
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
-  handleBuild(datalist, fields, valueArray, event, eventName) {
-    valueArray = DaoHelper.setDataTime(valueArray, datalist)
-    let json = DaoHelper.buildJson(fields, valueArray)
-    event.emit(eventName, DaoHelper.buildJson(fields, valueArray))
-  }
 }

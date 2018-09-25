@@ -75,7 +75,9 @@ export default class DaoHelper {
   // 设置data及timestamp字段
   static setDataTime(valueArray, datalist) {
     valueArray.push(datalist)
-    valueArray.push(new Date().getTime())
+    let date = new Date().getTime()
+    console.log(`date is ${date}`)
+    valueArray.push(date)
     return valueArray
   }
 
@@ -112,5 +114,37 @@ export default class DaoHelper {
       p = path.substring(path.lastIndexOf('/'), path.length)
     }
     return p
+  }
+
+  /*
+  组装返回结果为标准格式
+  datalist: 返回结果中data字段的值
+  fields:返回结果中的返回字段
+  valueArray:返回结果中的各字段的值
+  */
+  static handleBuild(datalist, fields, valueArray, event, eventName) {
+    valueArray = DaoHelper.setDataTime(valueArray, datalist)
+    let json = DaoHelper.buildJson(fields, valueArray)
+    event.emit(eventName, DaoHelper.buildJson(fields, valueArray))
+  }
+
+  // 根据location获取locationCode，待完善
+  static getLocationCode(location) {
+    // todo need a location code map table all of the world, include multiple language
+  }
+
+  // 处理dao中结果
+  static handleDaoQuery(c, querySql, querySqlParams) {
+    return new Promise((resolve, reject) => {
+      c.query(querySql, querySqlParams, (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+          console.log(result)
+        }
+      })
+      c.end()
+    }).catch(err => {console.log(err)})
   }
 }
