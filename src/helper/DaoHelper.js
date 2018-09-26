@@ -6,20 +6,20 @@ export default class DaoHelper {
 
   // 生成event对象
   static buildEvents() {
-     let events = require('events')
-     return new events.EventEmitter()
+    let events = require('events')
+    return new events.EventEmitter()
   }
 
   // 生成数据库连接对象
   static buildConnect() {
     return mysql.createConnection({
-      host:'54.238.237.51',
-      user:'root',
-      password:'122544',
-      database:'share_test_db',
+      host: '54.238.237.51',
+      user: 'root',
+      password: '122544',
+      database: 'share_test_db',
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
-      port:'3306'
+      port: '3306'
     })
   }
 
@@ -48,13 +48,13 @@ export default class DaoHelper {
     let s = [];
     let hexDigits = "0123456789abcdef";
     for (let i = 0; i < 36; i++) {
-      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
     }
-    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-    s[8] = s[13] = s[18] = s[23] = "-";
-    let uuid = s.join("");
-    return uuid;
+    s[14] = "4"
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1)
+    s[8] = s[13] = s[18] = s[23] = "-"
+    let uuid = s.join("")
+    return uuid
   }
 
   // 组装数据
@@ -96,14 +96,14 @@ export default class DaoHelper {
   }
 
   // 创建多集目录
-  static mkDirs (dirname) {
-    if(fs.existsSync(dirname)){
+  static mkDirs(dirname) {
+    if (fs.existsSync(dirname)) {
       return true;
     } else {
-        if(this.mkDirs(path.dirname(dirname))) {
-          fs.mkdirSync(dirname);
-          return true;
-        }
+      if (this.mkDirs(path.dirname(dirname))) {
+        fs.mkdirSync(dirname);
+        return true;
+      }
     }
   }
 
@@ -145,6 +145,8 @@ export default class DaoHelper {
         }
       })
       c.end()
-    }).catch(err => {console.log(err)})
+    }).catch(err => {
+      console.log(err)
+    })
   }
 }

@@ -5,31 +5,6 @@ import TaskDao from '../dao/TaskDao.js'
 export default class TargetService {
 
   /*
-  上传目标数据
-  */
-  uploadTargetData(name, code, imgRes, comment, contributor, e, en) {
-    let uuid = DaoHelper.getUUID()
-    let target = new TargetDao()
-    let event = DaoHelper.buildEvents()
-    let eventName = 'uploadTargetDaoCB'
-    let fieldArray
-    let valueArray = []
-    let dataList = []
-    event.on(eventName, (result) => {
-      fieldArray = ['userId', 'message', 'status', 'data', 'timestamp']
-      valueArray.push(contributor)
-      if (result && result['affectedRows']) {
-        DaoHelper.setStatusMessage(valueArray, true)
-      } else {
-        DaoHelper.setStatusMessage(valueArray, false)
-      }
-      DaoHelper.setDataTime(valueArray, dataList)
-      e.emit(en, DaoHelper.buildJson(fieldArray, valueArray))
-    })
-    target.uploadTargetData(name, code, uuid, imgRes, comment, contributor, event, eventName)
-  }
-
-  /*
   上传目标信息服务
   name:目标名字
   code:目标编码
@@ -41,13 +16,13 @@ export default class TargetService {
   */
   async uploadTargetData(name, code, imgResBig, imgResSmall, comment, contributor, location, event, eventName) {
     let dao = new TargetDao()
-    let fieldArray = ['userId', 'message', 'status', 'data', 'timestamp']
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
     let datalist = []
     let unionId = DaoHelper.getUUID()
     let result = await dao.uploadTargetData(name, code, unionId, imgResBig, imgResSmall, comment, contributor, location)
     if (result && result['affectedRows']) { // 上传成功
-      datalist.push({name:name, code:code, union_id:unionId, img_res_big:imgResBig, img_res_small:imgResSmall, comment:comment, contributor:contributor, location:location})
+      datalist.push({name:name, code:code, union_id:unionId, img_res:imgResBig, img_res_small:imgResSmall, comment:comment, contributor:contributor, location:location})
       DaoHelper.setStatusMessage(valueArray, true)
     } else { // 上传失败
       DaoHelper.setStatusMessage(valueArray, false, '信息上传失败，请重试')
@@ -127,7 +102,15 @@ export default class TargetService {
     let valueArray = []
     let datalist = []
     number = parseInt(number)
+    sinceId = parseInt(sinceId)
     number = number > 100 ? 100 : number
+    if (sinceId === -1) { // 初始加载sinceId为-1
+      let r = await dao.getMaxCursorId() // 由于需要倒序加载，所以初始查询游标从最大值开始
+      if (r) {
+        sinceId = r[0]['MAX(cursor_id)'] + 1
+        console.log(`final sinceId is ${sinceId}`)
+      }
+    }
     let result = await dao.getTargetList(sinceId, number, userId)
     if (result) {
       datalist = datalist.concat(result)

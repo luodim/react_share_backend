@@ -2,21 +2,6 @@ import DaoHelper from '../helper/DaoHelper.js'
 
 export default class TargetDao {
 
-  // /*
-  // 上传目标数据
-  // */
-  // uploadTargetData(name, code, unionId, imgRes, comment, contributor, event, eventName) {
-  //   const c = DaoHelper.buildConnect()
-  //   let addSql = 'INSERT INTO target_table(name, code, union_id, img_res, comment, contributor)'
-  //   +` VALUES(?, ?, ?, ?, ?, ?)`
-  //   let addSqlParams = [name, code, unionId, imgRes, comment, contributor]
-  //   c.query(addSql, addSqlParams, (err, result) => {
-  //     if (DaoHelper.handleError(err, event, eventName)) return
-  //     DaoHelper.handleEvent(result, event, eventName)
-  //   })
-  //   c.end()
-  // }
-
   /*
   上传目标数据
   name:目标名称
@@ -88,9 +73,23 @@ export default class TargetDao {
   getTargetList(sinceId, number, userId) {
     const c = DaoHelper.buildConnect()
     let querySql = `SELECT * FROM target_table LEFT JOIN task_table ON target_table.union_id=task_table.union_id`
-    + ` AND task_table.user_id=? WHERE target_table.cursor_id>? LIMIT ?`
+    + ` AND task_table.user_id=? WHERE target_table.cursor_id<? ORDER BY target_table.cursor_id DESC LIMIT ?`
     let querySqlParams = [userId, sinceId, number]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
+  }
+
+  /*获取最大游标id*/
+  getMaxCursorId() {
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT MAX(cursor_id) from target_table`
+    return DaoHelper.handleDaoQuery(c, querySql)
+  }
+
+  /*获取最小游标id*/
+  getMinCursorId() {
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT MIN(cursor_id) from target_table`
+    return DaoHelper.handleDaoQuery(c, querySql)
   }
 
 }
