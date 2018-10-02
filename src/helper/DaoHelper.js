@@ -141,7 +141,6 @@ export default class DaoHelper {
           reject(err)
         } else {
           resolve(result)
-          console.log(result)
         }
       })
       c.end()

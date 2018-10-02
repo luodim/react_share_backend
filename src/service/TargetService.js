@@ -88,6 +88,13 @@ export default class TargetService {
     DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
+  async getTaskNum(unionId) {
+    let dao = new TaskDao()
+    let result = await dao.getTaskNum(unionId)
+    console.log(result)
+    return result['COUNT(union_id)']
+  }
+
   /*
   根据页面索引及每页请求数量分页请求
   sinceId:上一次查询获取结果的末位游标

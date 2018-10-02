@@ -72,7 +72,7 @@ export default class TargetDao {
   */
   getTargetList(sinceId, number, userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT * FROM target_table LEFT JOIN task_table ON target_table.union_id=task_table.union_id`
+    let querySql = `SELECT target_table.*,task_table.id FROM target_table LEFT JOIN task_table ON target_table.union_id=task_table.union_id`
     + ` AND task_table.user_id=? WHERE target_table.cursor_id<? ORDER BY target_table.cursor_id DESC LIMIT ?`
     let querySqlParams = [userId, sinceId, number]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)

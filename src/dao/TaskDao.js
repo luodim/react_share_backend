@@ -41,6 +41,17 @@ export default class TaskDao {
   }
 
   /*
+  获取指定unionId在任务列表中的数量
+  union_id:目标唯一识别码
+  */
+  getTaskNum(unionId) {
+    const c = DaoHelper.buildConnect()
+    let querySql = 'SELECT COUNT(union_id) from task_table WHERE union_id=?'
+    let querySqlParams = [unionId]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
+  }
+
+  /*
   根据userId获取对应任务列表
   userId:用户id
   */
