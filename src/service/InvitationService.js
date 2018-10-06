@@ -94,4 +94,25 @@ export default class InvitationService {
     }
     DaoHelper.handleBuild(datalist, fields, valueArray, event, eventName)
   }
+
+  /*
+  根据用户id更新邀请码数值
+  newCode：更新的数据
+  userId:用户id
+  */
+  async updateInvitationCode(userId, event, eventName) {
+    let dao = new InvitationDao()
+    let fields = ['message', 'status', 'data', 'timestamp']
+    let valueArray = []
+    let datalist = []
+    let newCode = DaoHelper.getUUID()
+    let result = await dao.updateInvitationCode(newCode, userId)
+    if (result && result['affectedRows']) {
+      valueArray = DaoHelper.setStatusMessage(valueArray, true)
+      datalist.push({user_id: userId, invitation_code: newCode})
+    } else {
+      valueArray = DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fields, valueArray, event, eventName)
+  }
 }

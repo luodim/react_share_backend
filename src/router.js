@@ -92,6 +92,19 @@ export default class Router {
         this.bindEvent(event, eventName)
         service.getAvailableInvitationCodeByUserId(userId, event, eventName)
         break
+      case '/api/invitation-code-update': // 更新邀请码
+        service = new InvitationService()
+        eventName = 'updateInvitationCodeCB'
+        this.bindEvent(event, eventName)
+        service.updateInvitationCode(userId, event, eventName)
+        break
+      case '/api/contribution-list': // 获取贡献信息列表
+        service = new TargetService()
+        eventName = 'getContributionList'
+        this.bindEvent(event, eventName)
+        console.log(`userId is ${userId}`)
+        service.getContributionList(userId, event, eventName)
+        break
     }
   }
 

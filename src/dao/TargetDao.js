@@ -92,4 +92,12 @@ export default class TargetDao {
     return DaoHelper.handleDaoQuery(c, querySql)
   }
 
+  /*获取贡献过的信息列表*/
+  getContributionList(userId) {
+    const c = DaoHelper.buildConnect()
+    let querySql = `SELECT * FROM target_table WHERE contributor=?`
+    let querySqlParams = [userId]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
+  }
+
 }

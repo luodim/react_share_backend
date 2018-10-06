@@ -41,8 +41,10 @@ export default class UserDao {
   // 通过userId获取用户信息
   getUserInfoByUserId(userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT * FROM user_table2 WHERE user_id=?`
-    let querySqlParams = [userId]
+    let querySql = `SELECT user_table2.*,invitation_table.invitation_code FROM user_table2
+    LEFT JOIN invitation_table ON user_table2.user_id=invitation_table.user_id
+    WHERE user_table2.user_id=? and invitation_table.is_used=?`
+    let querySqlParams = [userId, 0]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 

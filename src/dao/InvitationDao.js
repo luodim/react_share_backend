@@ -56,4 +56,16 @@ export default class InvitationDao {
     let updateSqlParams = [state, invitationCode]
     return DaoHelper.handleDaoQuery(c, updateSql, updateSqlParams)
   }
+
+  /*
+  根据用户id更新邀请码数值
+  newCode：更新的数据
+  userId:用户id
+  */
+  updateInvitationCode(newCode, userId) {
+    const c = DaoHelper.buildConnect()
+    let updateSql = 'UPDATE invitation_table SET invitation_code=? WHERE user_id=? and is_used=?'
+    let updateSqlParams = [newCode, userId, 0]
+    return DaoHelper.handleDaoQuery(c, updateSql, updateSqlParams)
+  }
 }

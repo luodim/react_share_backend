@@ -88,6 +88,7 @@ export default class TargetService {
     DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
+  /*根据unionId获取任务数量*/
   async getTaskNum(unionId) {
     let dao = new TaskDao()
     let result = await dao.getTaskNum(unionId)
@@ -120,6 +121,25 @@ export default class TargetService {
     }
     let result = await dao.getTargetList(sinceId, number, userId)
     if (result) {
+      datalist = datalist.concat(result)
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
+  }
+
+  /*
+  获取贡献的信息的列表
+  userId：用户id
+  */
+  async getContributionList(userId, event, eventName) {
+    let dao = new TargetDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
+    let valueArray = []
+    let datalist = []
+    let result = await dao.getContributionList(userId)
+    if (result && result.length > 0) {
       datalist = datalist.concat(result)
       DaoHelper.setStatusMessage(valueArray, true)
     } else {

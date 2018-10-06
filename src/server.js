@@ -65,7 +65,6 @@ export default class Server {
         console.log(err)
       } else {
         body = fields
-        console.log(`fields is ${fields}`)
         console.log(body)
         if (files && files.img_res) { // 存在文件对象且文件对象中的img_res字段不为空，处理图片
           // 修改文件后缀名
