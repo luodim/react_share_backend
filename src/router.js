@@ -102,8 +102,25 @@ export default class Router {
         service = new TargetService()
         eventName = 'getContributionList'
         this.bindEvent(event, eventName)
-        console.log(`userId is ${userId}`)
         service.getContributionList(userId, event, eventName)
+        break
+      case '/api/target-update': // 更新目标信息
+        service = new TargetService()
+        eventName = 'updateTargetInfoCB'
+        this.bindEvent(event, eventName)
+        service.updateTargetInfo(name, code, unionId, imgRes, imgResSmall, comment, contributor, location, event, eventName)
+        break
+      case '/api/target-del':
+        service = new TargetService()
+        eventName = 'delTargetInfoCB'
+        this.bindEvent(event, eventName)
+        service.deleteTargetData([unionId], event, eventName)
+        break
+      case '/api/get-like-num':
+        service = new TaskService()
+        eventName = 'getLikeNumCB'
+        this.bindEvent(event, eventName)
+        service.getTaskNum(unionId, event, eventName)
         break
     }
   }

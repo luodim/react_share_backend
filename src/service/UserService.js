@@ -76,6 +76,11 @@ export default class UserService {
             invitationService.addInvitationCode(userId, DaoHelper.buildEvents(), 'invitationCodeAddCB')
             // 更新创建此账户使用的邀请码的使用状态
             invitationService.updateInvitationCodeUseState(invitationCode, true, DaoHelper.buildEvents(), 'invitationCodeUpdateCB')
+            // 为提供邀请码使此新用户注册成功的账户创建新的邀请码
+            let result = await dao2.getUserIdByInvitationCode(invitationCode)
+            console.log(result)
+            console.log(result[0].user_id)
+            if (result && result[0] && result[0].user_id) invitationService.addInvitationCode(result[0].user_id, DaoHelper.buildEvents(), 'invitationCodeAddCB')
             //---------------------------------------------------------------------------------------------------------------------
           } else { // 新用户创建失败
             valueArray = DaoHelper.setStatusMessage(valueArray, false, '创建新用户失败，请重试')

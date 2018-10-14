@@ -85,7 +85,7 @@ export default class InvitationService {
     let fields = ['message', 'status', 'data', 'timestamp']
     let valueArray = []
     let datalist = []
-    state = state==='true' ? 1 : 0;
+    state = state ? 1 : 0;
     let result = await dao.updateInvitationCodeUseState(invitationCode, state)
     if (result && result['affectedRows']) {
       valueArray = DaoHelper.setStatusMessage(valueArray, true)

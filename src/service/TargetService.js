@@ -148,4 +148,36 @@ export default class TargetService {
     DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
+  /*
+  更新目标信息
+  name:名称
+  code:编号
+  unionId:目标唯一识别码
+  imgResBig:目标图片链接
+  imgResSmall:目标小图链接
+  comment:对目标的描述
+  contributor:目标信息贡献者id
+  location：目标位置
+  event:回调事件
+  eventName:回调事件名称
+  */
+  async updateTargetInfo(name, code, unionId, imgResBig, imgResSmall, comment, contributor, location, event, eventName) {
+    let dao = new TargetDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
+    let valueArray = []
+    let datalist = []
+    if (imgResBig === '') imgResSmall = ''
+    let result = await dao.updateTargetInfo(name, code, unionId, imgResBig, imgResSmall, comment, location)
+    if (result && result['affectedRows']) {
+      datalist = datalist.concat(
+        [{name:name, code:code, union_id:unionId,
+        img_res:imgResBig, img_res_small: imgResSmall, comment:comment, contributor:contributor,
+        location:location}])
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
+  }
+
 }

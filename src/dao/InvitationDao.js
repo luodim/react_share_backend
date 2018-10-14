@@ -24,6 +24,14 @@ export default class InvitationDao {
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
 
+  // 获取邀请码对应的user id
+  getUserIdByInvitationCode(invitationCode) {
+    const c = DaoHelper.buildConnect()
+    let querySql = 'SELECT user_id from invitation_table WHERE invitation_code=?'
+    let querySqlParams = [invitationCode]
+    return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
+  }
+
   /*
   获取可用邀请码（即未被使用过的邀请码）
   userId:用户id

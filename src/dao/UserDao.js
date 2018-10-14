@@ -41,9 +41,9 @@ export default class UserDao {
   // 通过userId获取用户信息
   getUserInfoByUserId(userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT user_table2.*,invitation_table.invitation_code FROM user_table2
-    LEFT JOIN invitation_table ON user_table2.user_id=invitation_table.user_id
-    WHERE user_table2.user_id=? and invitation_table.is_used=?`
+    let querySql = `SELECT user_table.*,invitation_table.invitation_code FROM user_table
+    LEFT JOIN invitation_table ON user_table.user_id=invitation_table.user_id
+    WHERE user_table.user_id=? and invitation_table.is_used=?`
     let querySqlParams = [userId, 0]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
@@ -51,7 +51,7 @@ export default class UserDao {
   // 通过邀请码获取用户信息
   getUserInfoByInvitationCode(invitationCode) {
     const c = DaoHelper.buildConnect()
-    let querySql = 'SELECT * FROM user_table2 WHERE invitation_code_related=?'
+    let querySql = 'SELECT * FROM user_table WHERE invitation_code_related=?'
     let querySqlParams = [invitationCode]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }
@@ -59,14 +59,14 @@ export default class UserDao {
   // 创建新用户
   addUser(userId, invitationCode, fingerCode, nickname) {
     const c = DaoHelper.buildConnect()
-    let addSql = 'INSERT INTO user_table2(user_id, invitation_code_related, finger_code, nickname) VALUES(?, ?, ?, ?)'
+    let addSql = 'INSERT INTO user_table(user_id, invitation_code_related, finger_code, nickname) VALUES(?, ?, ?, ?)'
     let addSqlParams = [userId, invitationCode, fingerCode, nickname]
     return DaoHelper.handleDaoQuery(c, addSql, addSqlParams)
   }
 
   getUserList() {
     const c = DaoHelper.buildConnect()
-    let querySql = 'SELECT * FROM user_table2'
+    let querySql = 'SELECT * FROM user_table'
     return DaoHelper.handleDaoQuery(c, querySql)
   }
 }

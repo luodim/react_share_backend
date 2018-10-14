@@ -85,4 +85,22 @@ export default class TaskService {
     DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
   }
 
+  /*
+  根据union id获取对应的task num数量
+  */
+  async getTaskNum(unionId, event, eventName) {
+    let dao = new TaskDao()
+    let fieldArray = ['message', 'status', 'data', 'timestamp']
+    let valueArray = []
+    let datalist = []
+
+    let result = await dao.getTaskNum(unionId)
+    if (result) {
+      datalist.push({likeNum: result[0]['COUNT(union_id)']})
+      DaoHelper.setStatusMessage(valueArray, true)
+    } else {
+      DaoHelper.setStatusMessage(valueArray, false)
+    }
+    DaoHelper.handleBuild(datalist, fieldArray, valueArray, event, eventName)
+  }
 }

@@ -95,9 +95,33 @@ export default class TargetDao {
   /*获取贡献过的信息列表*/
   getContributionList(userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = `SELECT * FROM target_table WHERE contributor=?`
+    let querySql = `SELECT * FROM target_table WHERE contributor=? ORDER BY cursor_id DESC`
     let querySqlParams = [userId]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
+  }
+
+  /*更新目标信息*/
+  updateTargetInfo(name, code, unionId, imgResBig, imgResSmall, comment, location) {
+    const c = DaoHelper.buildConnect()
+    let params = [name, code, imgResBig, imgResSmall, comment, location]
+    let sqlPart = ['name=?,', 'code=?,', 'img_res=?,', 'img_res_small=?,', 'comment=?,', 'location=?,']
+    let updateSql = `UPDATE target_table SET `
+    let updateSqlParams = []
+    params.map((v, index) => {
+      if (v || v === '') {
+        updateSql += sqlPart[index]
+        v === '' ? updateSqlParams.push(null) : updateSqlParams.push(v)
+      }
+    })
+    let index = updateSql.lastIndexOf(',')
+    if (index !== -1) {
+      updateSql = updateSql.substring(0, index)
+    }
+    updateSql += ` WHERE union_id=?`
+    updateSqlParams.push(unionId)
+    console.log(`sql is ${updateSql}`)
+    console.log(updateSqlParams)
+    return DaoHelper.handleDaoQuery(c, updateSql, updateSqlParams)
   }
 
 }
