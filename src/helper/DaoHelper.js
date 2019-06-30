@@ -2,6 +2,10 @@ import mysql from 'mysql'
 import fs from 'fs'
 import path from 'path'
 
+const isTest = true
+const hostName = isTest ? '127.0.0.1' : '54.238.237.51'
+const databaseName = isTest ? 'local_share_test' : 'share_test_db'
+
 export default class DaoHelper {
 
   // 生成event对象
@@ -13,10 +17,10 @@ export default class DaoHelper {
   // 生成数据库连接对象
   static buildConnect() {
     return mysql.createConnection({
-      host: '54.238.237.51',
+      host: hostName,
       user: 'root',
       password: '122544',
-      database: 'share_test_db',
+      database: databaseName,
       charset: "utf8mb4",
       collate: "utf8mb4_unicode_ci",
       port: '3306'

@@ -57,7 +57,7 @@ export default class TaskDao {
   */
   getTaskList(userId) {
     const c = DaoHelper.buildConnect()
-    let querySql = 'SELECT * FROM task_table LEFT JOIN target_table ON task_table.union_id=target_table.union_id WHERE task_table.user_id=?'
+    let querySql = 'SELECT * FROM task_table LEFT JOIN target_table ON task_table.union_id=target_table.union_id WHERE task_table.user_id=? ORDER BY task_table.id DESC'
     let querySqlParams = [userId]
     return DaoHelper.handleDaoQuery(c, querySql, querySqlParams)
   }

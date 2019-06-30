@@ -43,13 +43,14 @@ export default class UserService {
 
     let result = await dao.getUserInfoByInvitationCode(invitationCode)
     if (result && result.length > 0) { // 用户存在
-      let isValidDev = result[0].finger_code === fingerCode
-      datalist.push(result)
-      if (isValidDev) { // 设备码能够匹配
-        valueArray = DaoHelper.setStatusMessage(valueArray, true)
-      } else { // 设备码不匹配
-        valueArray = DaoHelper.setStatusMessage(valueArray, false, '测试阶段为了减轻服务器压力仅支持单设备登录，请使用首次注册所用设备登录')
-      }
+      // let isValidDev = result[0].finger_code === fingerCode
+      datalist.push(result[0])
+      valueArray = DaoHelper.setStatusMessage(valueArray, true)
+      // if (isValidDev) { // 设备码能够匹配
+      //   valueArray = DaoHelper.setStatusMessage(valueArray, true)
+      // } else { // 设备码不匹配
+      //   valueArray = DaoHelper.setStatusMessage(valueArray, false, '测试阶段为了减轻服务器压力仅支持单设备登录，请使用首次注册所用设备登录')
+      // }
       DaoHelper.handleBuild(datalist, fields, valueArray, event, eventName)
 
     } else  { // 用户不存在，查询邀请码是否存在于邀请码列表
